@@ -318,7 +318,7 @@ details ul { padding-left: 18px; }
           <circle cx="110" cy="50" r="11" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="3 3"/>
           <path d="M112 66 l-2 -12 l8 6 z" fill="var(--ink)"/>
         </svg>
-        <figcaption>Tap a gray tile next to you to step onto it. Tap any explored tile to jump back for free.</figcaption>
+        <figcaption>Tap a tile next to you to step onto it. Tap any explored tile to jump back for free.</figcaption>
       </figure>
       <p>You have 5 torches. Dead ends put them out. Lose them all and the fog wins.</p>
       <div class="howfig-row">
@@ -848,7 +848,7 @@ details ul { padding-left: 18px; }
     while (c !== s) { path.push(c); c = prev.get(c); }
     return path.reverse();
   }
-  // Tap anywhere you've explored to travel there for free; tap a lit edge cell to step into it.
+  // Tap anywhere you've explored to travel there for free; tap an unexplored neighbor (drawn gray) to step into it.
   // Fog hard mode: once you're in a corridor (a tile with exactly 2 openings), you must keep going forward
   // until you reach a junction or a dead end. Returns the only allowed next tile, or -1 if you're free to move.
   function corridorForward() {
