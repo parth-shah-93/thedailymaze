@@ -255,13 +255,13 @@ details ul { padding-left: 18px; }
 
 
   <div class="foot">
-    <span id="footNote">Everyone gets the same two mazes today.</span>
+    <span id="footNote">Same mazes for everyone. New ones every day.</span>
     <button class="linkbtn" id="practiceBtn">Play a practice maze</button>
   </div>
   <div class="tester" id="tester" hidden>
     <button class="btn" id="newPracticeBtn">New practice maze</button>
   </div>
-  <footer class="sitefoot"><span>New mazes every midnight, your time</span><span><a href="mailto:support@thedailymaze.com?subject=The%20Daily%20Maze%20feedback">Contact</a> · © 2026 The Daily Maze</span></footer>
+  <footer class="sitefoot"><span><a href="mailto:support@thedailymaze.com?subject=The%20Daily%20Maze%20feedback">Contact</a> · © 2026 The Daily Maze</span></footer>
 </div>
   <div class="modal" id="resultModal" hidden role="dialog" aria-modal="true" aria-labelledby="resultTitle">
     <div class="modal-card">
@@ -1176,7 +1176,7 @@ details ul { padding-left: 18px; }
     $("howFog").hidden = mode !== "fog";
     $("guesses").hidden = mode !== "path";
     $("practiceBtn").textContent = practice ? "Back to today's mazes" : "Play a practice maze";
-    $("footNote").textContent = practice ? "Practice mazes are random and are not saved." : "Everyone gets the same two mazes today.";
+    $("footNote").textContent = practice ? "Practice mazes are random and are not saved." : "Same mazes for everyone. New ones every day.";
     $("tester").hidden = !practice;
 
     const st = $("status");
