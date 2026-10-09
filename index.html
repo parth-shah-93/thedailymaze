@@ -1,0 +1,1320 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>The Daily Maze</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: one narrow play column, a hedge-maze board as the centerpiece, controls and guess log stacked beneath */
+:root {
+  --bg: #e9eee8;
+  --panel: #f7f9f5;
+  --ink: #1b2a24;
+  --muted: #5e6f66;
+  --grid: #c3cec6;
+  --hedge: #24503a;
+  --route: #2c62c9;
+  --hit: #3d9a5b;
+  --hit-soft: #cfe8d5;
+  --near: #c99a1c;
+  --near-soft: #f3e4b4;
+  --miss: #8b9a91;
+  --miss-soft: #d9e0db;
+  --bad: #c2463b;
+  --fog: #26332d;
+  --glimpse: #8fa197;
+  --alt: #7d5fd0;
+  --alt-soft: #e2daf6;
+  --wrong: #dd7230;
+  --wrong-soft: #ffc994;
+  --partial: #e3a63b;
+  --hot: #f2a68a;
+  --neutral: #ece2c6;
+  --scrim: rgba(18, 28, 23, 0.5);
+  --start: #dfe5e0;
+  --cold: #c6d6ee;
+  --font-display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-data: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101613; --panel: #19221d; --ink: #e2eae4; --muted: #93a59a; --grid: #34433a;
+    --hedge: #8fcaa2; --route: #6c9dff; --hit: #4fb46e; --hit-soft: #1f4029; --near: #e2b845;
+    --near-soft: #47391a; --miss: #66766c; --miss-soft: #28322c; --bad: #e86a5f; --fog: #070a08; --glimpse: #3a4a40; --alt: #a58cf0; --alt-soft: #3a2f5a; --wrong: #f08a45; --wrong-soft: #a34f0f; --partial: #e6b04f; --hot: #7a2f1c; --neutral: #4d4733; --cold: #1f3350; --start: #55635a; --scrim: rgba(0, 0, 0, 0.65); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101613; --panel: #19221d; --ink: #e2eae4; --muted: #93a59a; --grid: #34433a;
+  --hedge: #8fcaa2; --route: #6c9dff; --hit: #4fb46e; --hit-soft: #1f4029; --near: #e2b845;
+  --near-soft: #47391a; --miss: #66766c; --miss-soft: #28322c; --bad: #e86a5f; --fog: #070a08; --glimpse: #3a4a40; --alt: #a58cf0; --alt-soft: #3a2f5a; --wrong: #f08a45; --wrong-soft: #a34f0f; --partial: #e6b04f; --hot: #7a2f1c; --neutral: #4d4733; --cold: #1f3350; --start: #55635a; --scrim: rgba(0, 0, 0, 0.65); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 540px; margin: 0 auto; padding-inline: 16px; padding-block: 18px 40px; display: flex; flex-direction: column; gap: 16px; }
+.top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-bottom: 2px solid var(--hedge); padding-bottom: 10px; }
+.brand { font-family: var(--font-display); font-weight: 700; font-size: 28px; letter-spacing: -0.02em; margin: 0; color: var(--hedge); }
+.meta { font-family: var(--font-data); font-size: 12px; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+.meta b { color: var(--ink); }
+.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 2px solid var(--hedge); border-radius: 10px; overflow: hidden; }
+.modes button { font: inherit; font-weight: 600; padding: 10px 8px; border: 0; background: transparent; color: var(--ink); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0; line-height: 1.2; }
+.modes button small { font-weight: 400; color: var(--muted); font-size: 12px; }
+.modes button[aria-selected="true"] { background: var(--hedge); color: var(--bg); }
+.modes button[aria-selected="true"] small { color: var(--bg); opacity: .8; }
+.modes button + button { border-left: 2px solid var(--hedge); }
+.board-wrap { position: relative; width: 100%; }
+canvas { display: block; width: 100%; height: auto; aspect-ratio: 1; max-width: 100%; touch-action: none; border-radius: 6px; cursor: pointer; }
+.status { font-size: 15px; min-height: 24px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+.status .hint { color: var(--muted); font-size: 13px; }
+.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; font-weight: 700; }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { font: inherit; font-weight: 600; font-size: 14px; padding: 9px 14px; border-radius: 8px; border: 1.5px solid var(--grid); background: var(--panel); color: var(--ink); cursor: pointer; }
+.btn:hover:not(:disabled) { border-color: var(--hedge); }
+.btn.primary { background: var(--route); border-color: var(--route); color: #fff; margin-left: auto; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+button:focus-visible, summary:focus-visible { outline: 3px solid var(--route); outline-offset: 2px; }
+.meter { flex: 1 1 200px; display: flex; flex-direction: column; gap: 4px; }
+.lanterns { display: inline-flex; gap: 6px; align-items: center; font-weight: 600; }
+.lan { font-size: 18px; line-height: 1; display: inline-block; }
+.lan.out { filter: grayscale(1); opacity: .3; }
+/* a torch that just burned flickers, then goes dark */
+.lan.flicker { animation: lanFlicker 0.9s ease-out forwards; }
+@keyframes lanFlicker {
+  0% { filter: none; opacity: 1; transform: scale(1.15); }
+  20% { filter: grayscale(1); opacity: .3; transform: scale(1); }
+  35% { filter: none; opacity: 1; }
+  55% { filter: grayscale(1); opacity: .3; }
+  70% { filter: none; opacity: .7; }
+  100% { filter: grayscale(1); opacity: .3; }
+}
+@media (prefers-reduced-motion: reduce) { .lan.flicker { animation: none; } }
+.guesses { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.guesses li { display: flex; padding: 3px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; }
+.guesses li.blank { cursor: default; }
+.guesses li.sel { border-color: var(--route); }
+.forks { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; min-width: 0; }
+.fk { width: 36px; height: 36px; flex: none; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-data); font-size: 11px; font-weight: 700; color: var(--panel); background: var(--miss); }
+.fk.g { background: var(--hit); } .fk.x { background: var(--partial); } .fk.n { background: transparent; box-shadow: inset 0 0 0 3px var(--muted); }
+.guesses li { align-items: center; gap: 10px; }
+.len { font-family: var(--font-data); font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--grid); color: var(--ink); margin-right: 6px; white-space: nowrap; }
+.len.ok { background: var(--hit); color: var(--panel); } .len.over { background: var(--wrong); color: var(--panel); }
+.turns { font-family: var(--font-data); font-size: 12px; color: var(--muted); min-width: 64px; }
+.fin { width: 28px; height: 36px; flex: none; display: grid; place-items: center; color: var(--muted); opacity: .45; }
+.fin svg { width: 22px; height: 26px; } .fin.on { color: var(--hit); opacity: 1; } .fin.empty { opacity: .2; }
+.fk.cur { background: var(--route); }
+.fk.empty { background: transparent; box-sizing: border-box; border: 2px dashed var(--grid); }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; }
+.cairn { width: 16px; height: 16px; margin-right: 4px; fill: var(--ink); stroke: var(--panel); stroke-width: 1; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.copied { font-size: 13px; color: var(--hit); }
+details { background: var(--panel); border-radius: 10px; padding: 10px 14px; }
+summary { cursor: pointer; font-weight: 600; }
+details p, details ul { margin: 8px 0 0; color: var(--ink); }
+details ul { padding-left: 18px; }
+.key { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; }
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.linkbtn { font: inherit; background: none; border: 0; color: var(--route); cursor: pointer; padding: 0; font-weight: 600; }
+.tester { display: flex; flex-direction: column; gap: 8px; background: var(--panel); border-radius: 10px; padding: 10px 14px; font-size: 13px; }
+.tester-label { color: var(--muted); }
+.modal { position: fixed; inset: 0; z-index: 10; background: var(--scrim); display: flex; align-items: center; justify-content: center;
+  padding: max(16px, env(safe-area-inset-top, 0px)) 16px max(16px, env(safe-area-inset-bottom, 0px)); }
+.modal-card { position: relative; background: var(--panel); color: var(--ink); border-radius: 14px; border: 2px solid var(--hedge);
+  max-width: 460px; width: 100%; max-height: 100%; overflow-y: auto; padding: 20px 20px 18px; display: flex; flex-direction: column; gap: 10px; }
+.modal-card h2 { font-family: var(--font-display); font-size: 20px; font-weight: 500; margin: 0 28px 2px 0; color: var(--hedge); }
+.howto p, .howto ul { margin: 0; } .howto { display: flex; flex-direction: column; gap: 10px; } .howto ul { padding-left: 18px; }
+.howfig { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.howfig svg { display: block; width: 100%; max-width: 280px; height: auto; margin: 0 auto; }
+.howfig figcaption { font-size: 13px; color: var(--muted); text-align: center; text-wrap: balance; }
+.howfig figcaption .key { vertical-align: -1px; }
+.key.round { border-radius: 50%; } .key.hollow { background: transparent; box-shadow: inset 0 0 0 2px var(--muted); }
+.howfig svg text { font-family: var(--font-body); }
+.howfig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.howfig-row svg { max-width: 140px; }
+.modal-x { position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 50%; border: 0; background: transparent; color: var(--muted); font-size: 24px; line-height: 1; cursor: pointer; }
+.modal-x:hover { color: var(--ink); }
+.share { margin: 0; font-family: var(--font-data); font-size: 14px; white-space: pre-wrap; background: var(--bg); padding: 12px; border-radius: 8px; overflow-x: auto; }
+.result-btn { margin-left: 0; align-self: center; }
+.modal-play { margin: 6px 0 0; align-self: stretch; padding: 11px; font-size: 15px; }
+.top-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.chip { font: inherit; font-size: 13px; font-weight: 600; padding: 5px 12px; border-radius: 999px; border: 1.5px solid var(--hedge); background: transparent; color: var(--hedge); cursor: pointer; }
+.chip[aria-expanded="true"] { background: var(--hedge); color: var(--bg); }
+.settings { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 14px; }
+.toggle { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600; }
+.toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.toggle .track { width: 38px; height: 22px; border-radius: 11px; background: var(--grid); position: relative; transition: background .15s; flex: none; }
+.toggle .track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--panel); transition: transform .15s; }
+.toggle input:checked + .track { background: var(--route); }
+.toggle input:checked + .track::after { transform: translateX(16px); }
+.toggle input:focus-visible + .track { outline: 3px solid var(--route); outline-offset: 2px; }
+.toggle input:disabled + .track { opacity: .5; }
+.settings .note { color: var(--muted); font-size: 13px; }
+.stats { background: var(--panel); border: 2px solid var(--hedge); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 14px; }
+.stats h2 { font-family: var(--font-display); font-size: 16px; font-weight: 500; margin: 0; }
+.tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; }
+.tiles div { display: flex; flex-direction: column; gap: 2px; }
+.tiles .num { font-size: 26px; line-height: 1.1; }
+.tiles span:last-child { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.dist { display: flex; flex-direction: column; gap: 4px; }
+.dist-row { display: grid; grid-template-columns: 16px 1fr; gap: 8px; align-items: center; font-family: var(--font-data); font-size: 12px; }
+.dist-row i { display: block; height: 18px; min-width: 22px; border-radius: 3px; background: var(--grid); color: var(--ink); font-style: normal; text-align: right; padding-right: 6px; line-height: 18px; font-weight: 700; }
+.dist-row.today i { background: var(--hit); color: #fff; }
+@media (prefers-reduced-motion: reduce) { .toggle .track, .toggle .track::after { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1 class="brand">The Daily Maze</h1>
+    <div class="top-right">
+      <div class="meta" id="meta"></div>
+      <button class="chip" id="howBtn">How to play</button>
+      <button class="chip" id="statsBtn" aria-expanded="false" aria-controls="stats">Stats</button>
+    </div>
+  </header>
+
+  <section class="stats" id="stats" hidden>
+    <h2 id="statsTitle">Trail stats</h2>
+    <div class="tiles">
+      <div><span class="num" id="stPlayed">0</span><span>Played</span></div>
+      <div><span class="num" id="stWin">0</span><span>Win %</span></div>
+      <div><span class="num" id="stStreak">0</span><span>Streak</span></div>
+      <div><span class="num" id="stMax">0</span><span>Best streak</span></div>
+    </div>
+    <span class="tester-label" id="stDistLabel">Tries to solve</span>
+    <div class="dist" id="stDist"></div>
+  </section>
+
+  <nav class="modes" role="tablist" aria-label="Game mode">
+    <button id="tab-path" role="tab" aria-selected="true" data-mode="path">Trail<small>Find the hidden trail</small></button>
+    <button id="tab-fog" role="tab" aria-selected="false" data-mode="fog">Fog<small>Find the hidden flag</small></button>
+  </nav>
+
+  <div class="settings" id="pathSettings">
+    <label class="toggle" for="hardToggle">
+      <input type="checkbox" id="hardToggle">
+      <span class="track" aria-hidden="true"></span>
+      Hard mode
+    </label>
+    <span class="note" id="hardNote">Keep every fork you've gotten green.</span>
+  </div>
+
+  <section class="board-wrap">
+    <canvas id="board" aria-label="Maze board" tabindex="0"></canvas>
+  </section>
+
+  <div class="legend" id="pathLegend">
+    <span><span class="key" style="background:var(--hit-soft);outline:1px solid var(--hit)"></span>On the trail</span>
+    <span><span class="key" style="background:var(--wrong-soft);outline:1px solid var(--wrong)"></span>Not on the trail</span>
+    <span><svg class="cairn" viewBox="0 0 20 20" aria-hidden="true"><ellipse cx="10" cy="15" rx="7" ry="3.2"/><ellipse cx="10.3" cy="10" rx="5.2" ry="2.6"/><ellipse cx="9.8" cy="5.6" rx="3.4" ry="2.1"/></svg>Trail marker: where a try went wrong</span>
+    <span><span class="key" style="background:var(--hedge)"></span>Wall (invisible until you cross it)</span>
+  </div>
+
+  <div class="status" id="status"></div>
+
+  <div class="controls" id="pathControls">
+    <button class="btn" id="undoBtn">Undo</button>
+    <button class="btn" id="clearBtn">Clear</button>
+    <button class="btn primary" id="submitBtn" disabled>Submit trail</button>
+  </div>
+
+  <div class="controls" id="fogControls" hidden>
+    <div class="meter">
+      <div class="status"><span class="lanterns" id="lanterns" aria-label="Torches left"></span><span class="hint">Going back is free. Tap any explored tile to jump there.</span></div>
+    </div>
+  </div>
+
+  <ol class="guesses" id="guesses"></ol>
+
+  <button class="btn primary result-btn" id="resultBtn" hidden>Show result</button>
+
+
+  <div class="foot">
+    <span id="footNote">Everyone gets the same two mazes today.</span>
+    <button class="linkbtn" id="practiceBtn">Play a practice maze</button>
+  </div>
+  <div class="tester" id="tester" hidden>
+    <button class="btn" id="newPracticeBtn">New practice maze</button>
+  </div>
+</div>
+  <div class="modal" id="resultModal" hidden role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+    <div class="modal-card">
+      <button class="modal-x" id="resultClose" aria-label="Close">×</button>
+      <h2 id="resultTitle"></h2>
+      <div class="tiles" id="resultStats">
+        <div><span class="num" id="rsPlayed">0</span><span>Played</span></div>
+        <div><span class="num" id="rsWin">0</span><span>Win %</span></div>
+        <div><span class="num" id="rsStreak">0</span><span>Streak</span></div>
+        <div><span class="num" id="rsMax">0</span><span>Best streak</span></div>
+      </div>
+      <pre id="shareText" class="share"></pre>
+      <div class="row">
+        <button class="btn primary" id="shareBtn">Copy result</button>
+        <span class="copied" id="copied" hidden>Copied to clipboard</span>
+      </div>
+      <button class="btn modal-play" id="resultOk">See the board</button>
+    </div>
+  </div>
+  <div class="modal" id="howModal" hidden role="dialog" aria-modal="true" aria-label="How to play">
+    <div class="modal-card">
+      <button class="modal-x" id="howClose" aria-label="Close">×</button>
+    <section class="howto" id="howPath">
+      <h2 id="howTitlePath">How to play Trail</h2>
+      <p>Find the hidden trail from the blue dot to the flag in 6 tries. The trail has 5 forks, and you know exactly how long it is.</p>
+      <figure class="howfig">
+        <svg viewBox="0 0 160 100" role="img" aria-label="Drawing a trail from the blue dot to the flag across a maze whose walls are invisible">
+          <rect x="5" y="5" width="150" height="90" rx="3" fill="var(--panel)" stroke="var(--hedge)" stroke-width="3.5"/><path d="M35 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M65 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M95 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M125 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 35 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 65 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><polyline points="20,20 50,20 80,20 80,50 80,80 110,80 140,80" fill="none" stroke="var(--route)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".9" /><circle cx="20" cy="20" r="7" fill="var(--route)"/><path d="M136 90 V70" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><path d="M136 70 L149 75 L136 80 Z" fill="var(--hit)"/>
+        </svg>
+        <figcaption>Draw a trail that matches the length shown, like <b class="len ok">7 / 7 tiles</b>. <b>Walls are invisible</b>, so any dashed line could be one.</figcaption>
+      </figure>
+      <figure class="howfig">
+        <svg viewBox="0 0 160 100" role="img" aria-label="After a try: green tiles up to where it went wrong, a stone on the last right tile, orange tiles where it left the trail, and the wall it hit"><rect x="5" y="5" width="150" height="90" rx="3" fill="var(--panel)" stroke="var(--hedge)" stroke-width="3.5"/><rect x="5" y="5" width="30" height="30" fill="var(--hit-soft)"/><rect x="35" y="5" width="30" height="30" fill="var(--hit-soft)"/><rect x="65" y="5" width="30" height="30" fill="var(--hit-soft)"/><rect x="65" y="35" width="30" height="30" fill="var(--wrong-soft)"/><rect x="65" y="65" width="30" height="30" fill="var(--wrong-soft)"/><path d="M35 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M65 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M95 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M125 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 35 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 65 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><polyline points="20,20 50,20 80,20 80,50 80,80 110,80 140,80" fill="none" stroke="var(--route)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".45"/><path d="M95 65 V95" stroke="var(--panel)" stroke-width="7.5" stroke-linecap="round"/><path d="M95 65 V95" stroke="var(--hedge)" stroke-width="4" stroke-linecap="round"/><g transform="translate(71 8)"><ellipse cx="9" cy="16" rx="7" ry="3.1" fill="var(--ink)" stroke="var(--panel)"/><ellipse cx="9.3" cy="11" rx="5.1" ry="2.6" fill="var(--ink)" stroke="var(--panel)"/><ellipse cx="8.8" cy="6.6" rx="3.3" ry="2" fill="var(--ink)" stroke="var(--panel)"/></g><circle cx="20" cy="20" r="7" fill="var(--route)"/><path d="M136 90 V70" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><path d="M136 70 L149 75 L136 80 Z" fill="var(--hit)"/></svg>
+        <figcaption>After each try, <span class="key" style="background:var(--hit)"></span>green shows how far you got and a stone marks where you went wrong. <span class="key" style="background:var(--wrong)"></span>Tiles off the trail turn orange, and any wall you hit appears. Nothing past a wall is shown.</figcaption>
+      </figure>
+      <figure class="howfig">
+        <svg viewBox="0 0 160 134" role="img" aria-label="The same try as above, with the hidden trail shown. The trail has 5 numbered forks. The try goes the right way at fork 1, the wrong way at fork 2, and nothing after that counts: green, amber, empty, empty, empty."><rect x="5" y="5" width="150" height="90" rx="3" fill="var(--panel)" stroke="var(--hedge)" stroke-width="3.5"/><path d="M35 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M65 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M95 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M125 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 35 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 65 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><polyline points="50,20 50,50" fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="2 4" stroke-linecap="round"/><polyline points="110,20 140,20" fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="2 4" stroke-linecap="round"/><polyline points="110,50 140,50" fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="2 4" stroke-linecap="round"/><polyline points="20,20 50,20 80,20 110,20 110,50 110,80 140,80" fill="none" stroke="var(--hit)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" opacity=".35"/><polyline points="20,20 50,20 80,20 80,50 80,80 110,80 140,80" fill="none" stroke="var(--route)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="6.5" fill="var(--route)"/><path d="M136 90 V70" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><path d="M136 70 L149 75 L136 80 Z" fill="var(--hit)"/><circle cx="50" cy="20" r="7.5" fill="var(--hit)" stroke="var(--panel)" stroke-width="1.5"/><text x="50" y="23.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">1</text><circle cx="80" cy="20" r="7.5" fill="var(--partial)" stroke="var(--panel)" stroke-width="1.5"/><text x="80" y="23.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">2</text><circle cx="110" cy="20" r="7.5" fill="var(--panel)" stroke="var(--muted)" stroke-width="2"/><text x="110" y="23.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">3</text><circle cx="110" cy="50" r="7.5" fill="var(--panel)" stroke="var(--muted)" stroke-width="2"/><text x="110" y="53.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">4</text><circle cx="110" cy="80" r="7.5" fill="var(--panel)" stroke="var(--muted)" stroke-width="2"/><text x="110" y="83.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">5</text><circle cx="36" cy="114" r="8" fill="var(--hit)"/><text x="36" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">1</text><circle cx="54" cy="114" r="8" fill="var(--partial)"/><text x="54" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">2</text><circle cx="72" cy="114" r="7.5" fill="none" stroke="var(--muted)" stroke-width="2"/><text x="72" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">3</text><circle cx="90" cy="114" r="7.5" fill="none" stroke="var(--muted)" stroke-width="2"/><text x="90" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">4</text><circle cx="108" cy="114" r="7.5" fill="none" stroke="var(--muted)" stroke-width="2"/><text x="108" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">5</text><g opacity=".5"><path d="M122 122 V106" stroke="var(--muted)" stroke-width="1.8" stroke-linecap="round"/><path d="M122 106 L132 110 L122 114 Z" fill="var(--muted)"/></g></svg>
+        <figcaption>Each circle is one fork:<br><span style="white-space:nowrap"><span class="key round" style="background:var(--hit)"></span>right way · <span class="key round" style="background:var(--partial)"></span>wrong way · <span class="key round hollow"></span>not reached</span><br>The flag lights up when you reach it.</figcaption>
+      </figure>
+      <p>Hard mode: keep every green fork.</p>
+    </section>
+    <section class="howto" id="howFog" hidden>
+      <h2 id="howTitleFog">How to play Fog</h2>
+      <p>Find the hidden flag in the dark. Tiles show how close it is: <span class="key" style="background:var(--hot)"></span>hot (2 tiles or less) · <span class="key" style="background:var(--neutral)"></span>neutral (4 or less) · <span class="key" style="background:var(--cold)"></span>cold.</p>
+      <figure class="howfig">
+        <svg viewBox="0 0 160 100" role="img" aria-label="Moving: your explored tiles light up with their heat, and you tap the next tile to step onto it">
+          <rect x="5" y="5" width="150" height="90" rx="4" fill="var(--fog)"/>
+          <rect x="5" y="35" width="30" height="30" fill="var(--start)"/><rect x="35" y="35" width="30" height="30" fill="var(--cold)"/><rect x="65" y="35" width="30" height="30" fill="var(--neutral)"/><rect x="95" y="35" width="30" height="30" fill="var(--glimpse)"/>
+          <path d="M5 35 H95 M5 65 H95 M5 35 V65" stroke="var(--panel)" stroke-width="7.5" stroke-linecap="round" fill="none"/><path d="M5 35 H95 M5 65 H95 M5 35 V65" stroke="var(--hedge)" stroke-width="4" stroke-linecap="round" fill="none"/>
+          <path d="M20 50 H80" stroke="var(--route)" stroke-width="4" stroke-linecap="round" opacity=".55"/>
+          <circle cx="80" cy="50" r="8" fill="var(--route)"/><circle cx="80" cy="50" r="3.0" fill="var(--panel)"/>
+          <circle cx="110" cy="50" r="11" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="3 3"/>
+          <path d="M112 66 l-2 -12 l8 6 z" fill="var(--ink)"/>
+        </svg>
+        <figcaption>Tap a lit tile to step. Tap any explored tile to jump back for free.</figcaption>
+      </figure>
+      <p>You have 5 torches. Dead ends put them out. Lose them all and the fog wins.</p>
+      <div class="howfig-row">
+        <figure class="howfig">
+          <svg viewBox="0 0 100 100" role="img" aria-label="Short dead end: one tile off the corridor">
+            <rect x="5" y="5" width="90" height="90" rx="4" fill="var(--fog)"/>
+            <rect x="5" y="65" width="30" height="30" fill="var(--cold)"/><rect x="35" y="65" width="30" height="30" fill="var(--cold)"/><rect x="65" y="65" width="30" height="30" fill="var(--glimpse)"/><rect x="35" y="35" width="30" height="30" fill="var(--cold)"/>
+            
+            <path d="M5 65 H35 M65 65 H95 M5 95 H95 M35 35 H65 M35 35 V65 M65 35 V65" stroke="var(--panel)" stroke-width="7.5" stroke-linecap="round" fill="none"/><path d="M5 65 H35 M65 65 H95 M5 95 H95 M35 35 H65 M35 35 V65 M65 35 V65" stroke="var(--hedge)" stroke-width="4" stroke-linecap="round" fill="none"/>
+            <circle cx="50" cy="50" r="7" fill="var(--route)"/><circle cx="50" cy="50" r="2.7" fill="var(--panel)"/>
+          </svg>
+          <figcaption><b>Short dead end</b>: puts out 1 🔥</figcaption>
+        </figure>
+        <figure class="howfig">
+          <svg viewBox="0 0 100 100" role="img" aria-label="Long dead end: a corridor three tiles deep that ends in walls">
+            <rect x="5" y="5" width="90" height="90" rx="4" fill="var(--fog)"/>
+            <rect x="5" y="65" width="30" height="30" fill="var(--cold)"/><rect x="35" y="65" width="30" height="30" fill="var(--glimpse)"/><rect x="5" y="35" width="30" height="30" fill="var(--cold)"/><rect x="5" y="5" width="30" height="30" fill="var(--cold)"/><rect x="35" y="5" width="30" height="30" fill="var(--cold)"/><rect x="65" y="5" width="30" height="30" fill="var(--cold)"/>
+            
+            
+            <path d="M5 5 H95 M95 5 V35 M35 35 H95 M5 5 V95 M35 35 V65 M5 95 H65" stroke="var(--panel)" stroke-width="7.5" stroke-linecap="round" fill="none"/><path d="M5 5 H95 M95 5 V35 M35 35 H95 M5 5 V95 M35 35 V65 M5 95 H65" stroke="var(--hedge)" stroke-width="4" stroke-linecap="round" fill="none"/>
+            <circle cx="80" cy="20" r="7" fill="var(--route)"/><circle cx="80" cy="20" r="2.7" fill="var(--panel)"/>
+          </svg>
+          <figcaption><b>Long dead end</b>: puts out 2 🔥🔥</figcaption>
+        </figure>
+      </div>
+      <figure class="howfig">
+        <svg viewBox="0 0 160 100" role="img" aria-label="Finding the flag: tiles turn from cold to neutral to hot, and the flag's tile lights up green">
+          <rect x="5" y="5" width="150" height="90" rx="4" fill="var(--fog)"/>
+          <rect x="5" y="35" width="30" height="30" fill="var(--cold)"/><rect x="35" y="35" width="30" height="30" fill="var(--neutral)"/><rect x="65" y="35" width="30" height="30" fill="var(--hot)"/><rect x="95" y="35" width="30" height="30" fill="var(--hit-soft)"/><rect x="65" y="5" width="30" height="30" fill="var(--hot)"/>
+          <path d="M5 35 H65 M95 35 H125 M5 65 H125 M125 35 V65 M5 35 V65 M65 5 V35 M95 5 V35 M65 5 H95" stroke="var(--panel)" stroke-width="7.5" stroke-linecap="round" fill="none"/><path d="M5 35 H65 M95 35 H125 M5 65 H125 M125 35 V65 M5 35 V65 M65 5 V35 M95 5 V35 M65 5 H95" stroke="var(--hedge)" stroke-width="4" stroke-linecap="round" fill="none"/>
+          <path d="M20 50 H96" stroke="var(--route)" stroke-width="4" stroke-linecap="round" opacity=".55"/>
+          <circle cx="110" cy="50" r="13.5" fill="none" stroke="var(--hit)" stroke-width="3"/>
+          <path d="M106 61 V39" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M106 39 L121 44.5 L106 50 Z" fill="var(--hit)"/>
+        </svg>
+        <figcaption>Follow the heat to the flag.</figcaption>
+      </figure>
+      <p>Your result: 🔥 torches left and 👣 tiles explored.</p>
+      <p>Hard mode: no turning back in a corridor.</p>
+    </section>
+      <button class="btn primary modal-play" id="howOk">Play</button>
+    </div>
+  </div>
+
+<script>
+(function () {
+  // ---------- seeded randomness ----------
+  function rngFrom(str) {
+    let h = 1779033703 ^ str.length;
+    for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); }
+    let a = h >>> 0;
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  // N E S W
+  const DIRS = [
+    { b: 1, dx: 0, dy: -1, o: 4 }, { b: 2, dx: 1, dy: 0, o: 8 },
+    { b: 4, dx: 0, dy: 1, o: 1 }, { b: 8, dx: -1, dy: 0, o: 2 }
+  ];
+
+  function genMaze(W, H, rng, extra) {
+    const open = new Uint8Array(W * H), seen = new Uint8Array(W * H);
+    const st = [0]; seen[0] = 1;
+    while (st.length) {
+      const c = st[st.length - 1], x = c % W, y = (c / W) | 0, nb = [];
+      for (const d of DIRS) {
+        const nx = x + d.dx, ny = y + d.dy;
+        if (nx >= 0 && ny >= 0 && nx < W && ny < H && !seen[ny * W + nx]) nb.push(d);
+      }
+      if (!nb.length) { st.pop(); continue; }
+      const d = nb[Math.floor(rng() * nb.length)], n = (y + d.dy) * W + x + d.dx;
+      open[c] |= d.b; open[n] |= d.o; seen[n] = 1; st.push(n);
+    }
+    let added = 0, tries = 0;
+    while (added < extra && tries++ < 1000) {
+      const x = Math.floor(rng() * W), y = Math.floor(rng() * H), d = DIRS[Math.floor(rng() * 4)];
+      const nx = x + d.dx, ny = y + d.dy;
+      if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
+      const c = y * W + x;
+      if (open[c] & d.b) continue;
+      open[c] |= d.b; open[ny * W + nx] |= d.o; added++;
+    }
+    return open;
+  }
+  function bfs(open, W, H, s, t) {
+    const prev = new Int32Array(W * H).fill(-1); prev[s] = s;
+    const q = [s];
+    for (let qi = 0; qi < q.length; qi++) {
+      const c = q[qi]; if (c === t) break;
+      const x = c % W, y = (c / W) | 0;
+      for (const d of DIRS) {
+        if (!(open[c] & d.b)) continue;
+        const n = (y + d.dy) * W + x + d.dx;
+        if (prev[n] !== -1) continue;
+        prev[n] = c; q.push(n);
+      }
+    }
+    const path = []; let c = t;
+    while (c !== s) { path.push(c); c = prev[c]; }
+    path.push(s); return path.reverse();
+  }
+  function dirIndex(a, b, W) {
+    const ax = a % W, ay = (a / W) | 0, bx = b % W, by = (b / W) | 0;
+    for (let i = 0; i < 4; i++) if (ax + DIRS[i].dx === bx && ay + DIRS[i].dy === by) return i;
+    return -1;
+  }
+  const edgeKey = (a, b) => a < b ? a + "-" + b : b + "-" + a;
+
+  // ---------- date + storage ----------
+  const now = new Date();
+  const pad2 = n => String(n).padStart(2, "0");
+  const dateKey = now.getFullYear() + "-" + pad2(now.getMonth() + 1) + "-" + pad2(now.getDate());
+  const puzzleNo = Math.max(1, Math.floor((Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(2026, 9, 7)) / 864e5) + 1);
+  const dateLabel = now.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+  // Path v5: routes are 6 straight lines. Older Path saves no longer match the rules.
+  const STORE = "mazedle-path31-" + dateKey;
+  const FOG_STORE = "mazedle-fog13-" + dateKey;
+  const STATS_STORE = "mazedle-stats2";
+  const HARD_PREF = "mazedle-hard";
+  const FOG_HARD_PREF = "mazedle-foghard";
+  function readJSON(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  function writeJSON(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function loadSave() { return { path: readJSON(STORE), fog: readJSON(FOG_STORE) }; }
+  function writeSave() {
+    if (practice) return;
+    writeJSON(STORE, { guesses: P.guesses, hard: P.hard });
+    writeJSON(FOG_STORE, { hist: F.hist, hard: F.hard });
+  }
+
+  // ---------- stats ----------
+  const dayNum = k => { const [y, m, d] = k.split("-").map(Number); return Math.round(Date.UTC(y, m - 1, d) / 864e5); };
+  const FOG_STATS = "mazedle-fogstats";
+  function saveResult(store, entry) {
+    const s = readJSON(store) || { history: {} };
+    if (s.history[dateKey]) return;
+    s.history[dateKey] = entry;
+    writeJSON(store, s);
+  }
+  // Path: g = tries used. Fog: g = lanterns remaining.
+  function recordResult() { if (!practice && P.done) saveResult(STATS_STORE, { won: P.won, g: P.won ? P.guesses.length : 0, hard: P.hard }); }
+  function recordFogResult() { if (!practice && F.done) saveResult(FOG_STATS, { won: F.won, g: F.won ? Math.max(0, 5 - F.deadEnds.length) : 0 }); }
+  // buckets: the values shown as bars, in display order (Trail: 1..6 tries; Fog: 5..1 lanterns remaining)
+  function computeStats(store, buckets) {
+    const h = (readJSON(store) || { history: {} }).history;
+    const keys = Object.keys(h).sort();
+    const played = keys.length, wins = keys.filter(k => h[k].won).length;
+    const dist = buckets.map(() => 0);
+    keys.forEach(k => { const i = buckets.indexOf(h[k].g); if (h[k].won && i >= 0) dist[i]++; });
+    let max = 0, run = 0, prev = null;
+    keys.forEach(k => {
+      const n = dayNum(k);
+      if (h[k].won) { run = (prev !== null && n === prev + 1 && run > 0) ? run + 1 : 1; } else run = 0;
+      prev = n; if (run > max) max = run;
+    });
+    let cur = 0, n = dayNum(dateKey);
+    if (!h[dateKey]) n -= 1; // today not played yet: streak still alive from yesterday
+    const byNum = {}; keys.forEach(k => byNum[dayNum(k)] = h[k]);
+    while (byNum[n] && byNum[n].won) { cur++; n--; }
+    return { played, winPct: played ? Math.round(wins / played * 100) : 0, cur, max, dist, today: h[dateKey] };
+  }
+
+  // ---------- game state ----------
+  const MAX_GUESSES = 6;
+  let practice = false, mode = "path";
+  let P, F;
+
+  // ----- daily difficulty (never shown to the player) -----
+  // Like Wordle, there is no weekly pattern: each day's difficulty level is picked at random (but the same for everyone).
+  // tier = where the start and flag can go (0: opposite corners, 1: flag on an edge, 2: both on edges).
+  // pct = how hard a maze to take from the day's most deceptive candidates (rated by a simulated player).
+  const LEVELS = [
+    { name: "Easy", tier: 0, pct: 0.55 },
+    { name: "Medium", tier: 1, pct: 0.68 },
+    { name: "Hard", tier: 1, pct: 0.78 },
+    { name: "Harder", tier: 2, pct: 0.88 },
+    { name: "Hardest", tier: 2, pct: 0.97 }
+  ];
+  const dailyLevel = key => Math.floor(rngFrom(key + "|difficulty")() * LEVELS.length);
+  const CANDIDATES = 8000; // on 6x6, about 1 in 90 has 5 forks, no short wrong ways and (after reshaping) a 3-way fork
+  const THREE_WAY = 1;     // at least this many forks offer 3 ways to go
+  const MIN_BRANCH = 2;    // every wrong way at a fork runs at least this many tiles before it dead-ends
+  const SIZE = 6;          // the Trail board is always 6x6
+  const RATE_TOP = 60;     // how many of the toughest-looking candidates the simulated player tries each day
+  const FORKS = 5;         // like Wordle's 5 letters: every path has exactly 5 forks
+
+  function distanceToPath(open, W, H, solSet) {
+    const dist = new Int16Array(W * H).fill(-1), q = [];
+    solSet.forEach(c => { dist[c] = 0; q.push(c); });
+    for (let qi = 0; qi < q.length; qi++) {
+      const c = q[qi], x = c % W, y = (c / W) | 0;
+      for (const d of DIRS) {
+        if (!(open[c] & d.b)) continue;
+        const n = (y + d.dy) * W + x + d.dx;
+        if (dist[n] !== -1) continue;
+        dist[n] = dist[c] + 1; q.push(n);
+      }
+    }
+    return dist;
+  }
+  function pickEnds(rng, tier, W, H) {
+    const N = W * H, corners = [0, W - 1, N - W, N - 1];
+    const edge = []; for (let i = 0; i < N; i++) { const x = i % W, y = (i / W) | 0; if (x === 0 || y === 0 || x === W - 1 || y === H - 1) edge.push(i); }
+    const man = (a, b) => Math.abs(a % W - b % W) + Math.abs(((a / W) | 0) - ((b / W) | 0));
+    const pick = arr => arr[Math.floor(rng() * arr.length)];
+    if (tier === 0) { const s = pick(corners); return [s, N - 1 - s]; }
+    if (tier === 1) { const s = pick(corners); return [s, pick(edge.filter(e => man(s, e) >= 7 && corners.indexOf(e) < 0))]; }
+    for (;;) { const s = pick(edge), e = pick(edge); if (man(s, e) >= 6 && corners.indexOf(s) < 0) return [s, e]; }
+  }
+  // Heuristic difficulty: long paths, steps that move away from the flag, and deep dead ends that act as decoys.
+  function scoreMaze(m) {
+    const { W, sol, exit, dist } = m;
+    const man = a => Math.abs(a % W - exit % W) + Math.abs(((a / W) | 0) - ((exit / W) | 0));
+    let away = 0; for (let i = 1; i < sol.length; i++) if (man(sol[i]) > man(sol[i - 1])) away++;
+    let deep = 0, maxD = 0; for (let i = 0; i < dist.length; i++) { if (dist[i] >= 3) deep++; if (dist[i] > maxD) maxD = dist[i]; }
+    return (sol.length - 1) + 2 * away + 0.25 * deep + 0.5 * maxD;
+  }
+  // Kruskal's method makes branchier mazes than the corridor builder.
+  function kruskalMaze(W, H, rng) {
+    const N = W * H, open = new Uint8Array(N), parent = new Int32Array(N);
+    for (let i = 0; i < N; i++) parent[i] = i;
+    // Edges encoded as cell * 2 + (0 = east, 1 = south), in the same order as before, then shuffled.
+    let ne = 0; const edges = new Int32Array(2 * N);
+    for (let i = 0; i < N; i++) { if (i % W < W - 1) edges[ne++] = i * 2; if (i < N - W) edges[ne++] = i * 2 + 1; }
+    for (let i = ne - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); const t = edges[i]; edges[i] = edges[j]; edges[j] = t; }
+    for (let k = 0; k < ne; k++) {
+      const c = edges[k] >> 1, south = edges[k] & 1, n = south ? c + W : c + 1;
+      let ra = c; while (parent[ra] !== ra) ra = parent[ra] = parent[parent[ra]];
+      let rb = n; while (parent[rb] !== rb) rb = parent[rb] = parent[parent[rb]];
+      if (ra === rb) continue;
+      parent[ra] = rb;
+      if (south) { open[c] |= 4; open[n] |= 1; } else { open[c] |= 2; open[n] |= 8; }
+    }
+    return open;
+  }
+  // A fork is any spot on the trail (including the start, but not the flag) where an opening leads off the trail,
+  // even a one-tile nub, so every place the player could go another way counts.
+  function findForks(open, sol, W, H) {
+    const solSet = new Set(sol), idx = [];
+    for (let i = 0; i < sol.length - 1; i++) {
+      const c = sol[i], x = c % W, y = (c / W) | 0;
+      if (DIRS.some(d => (open[c] & d.b) && !solSet.has((y + d.dy) * W + x + d.dx))) idx.push(i);
+    }
+    return idx;
+  }
+  // How many forks offer 3 ways to go (the most a square tile allows after arriving from one side).
+  function threeWayForks(m) {
+    return m.forks.filter(si => { const c = m.sol[si], k = DIRS.filter(d => m.open[c] & d.b).length; return (si === 0 ? k : k - 1) >= 3; }).length;
+  }
+  // Shortest wrong way on the trail: for each opening off the trail, how deep that side branch goes.
+  function minBranch(open, sol, W) {
+    const S = new Set(sol), nb = c => DIRS.filter(d => open[c] & d.b).map(d => (((c / W) | 0) + d.dy) * W + (c % W) + d.dx);
+    let mn = Infinity;
+    for (let i = 0; i < sol.length - 1; i++) for (const n of nb(sol[i])) {
+      if (S.has(n)) continue;
+      let best = 1; const st = [[n, sol[i], 1]];
+      while (st.length) { const [c, p, dep] = st.pop(); if (dep > best) best = dep; for (const m of nb(c)) if (m !== p && !S.has(m)) st.push([m, c, dep + 1]); }
+      if (best < mn) mn = best;
+    }
+    return mn;
+  }
+  // Simulated player used only to rate mazes: it heads for the flag along the cheapest route the board suggests,
+  // treating known path cells as cheap, unknown cells as normal, and avoiding gray cells and walls it has found.
+  function simTries(m, rng) {
+    const { W, H } = m, N = W * H, cell = new Map(), edge = new Map(), MAXT = 15;
+    for (let t = 1; t <= MAXT; t++) {
+      const cost = new Float64Array(N);
+      for (let c = 0; c < N; c++) { const st = cell.get(c); cost[c] = (st === "g" || st === "y" ? 0.25 : st === "x" ? 1e6 : 1) + rng() * 0.3; }
+      const dist = new Float64Array(N).fill(Infinity), prev = new Int32Array(N).fill(-1), done = new Uint8Array(N);
+      dist[m.start] = 0;
+      for (;;) {
+        let u = -1, best = Infinity;
+        for (let c = 0; c < N; c++) if (!done[c] && dist[c] < best) { best = dist[c]; u = c; }
+        if (u < 0 || u === m.exit) break;
+        done[u] = 1;
+        const x = u % W, y = (u / W) | 0;
+        for (const d of DIRS) {
+          const nx = x + d.dx, ny = y + d.dy;
+          if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
+          const v = ny * W + nx;
+          if (edge.get(edgeKey(u, v)) === "wall") continue;
+          if (dist[u] + cost[v] < dist[v]) { dist[v] = dist[u] + cost[v]; prev[v] = u; }
+        }
+      }
+      const r = []; let c = m.exit;
+      while (c !== -1) { r.push(c); if (c === m.start) break; c = prev[c]; }
+      r.reverse();
+      if (r.length === m.sol.length && r.every((v, i) => v === m.sol[i])) return t;
+      let p = 0; while (p + 1 < r.length && p + 1 < m.sol.length && r[p + 1] === m.sol[p + 1]) p++;
+      r.forEach((v, i) => { const st = !m.solSet.has(v) ? "x" : i <= p ? "g" : "y"; const old = cell.get(v); if (!old || old === "x" || (old === "y" && st === "g")) cell.set(v, st); });
+      for (let i = 1; i < r.length; i++) { const d = dirIndex(r[i - 1], r[i], W); edge.set(edgeKey(r[i - 1], r[i]), (m.open[r[i - 1]] & DIRS[d].b) ? "open" : "wall"); }
+    }
+    return MAXT + 1;
+  }
+  // Reshape a maze to add a 3-way fork without changing the trail: open a wall beside a 2-way fork (off the trail),
+  // then close one passage elsewhere on the loop that creates, so the maze still has exactly one route between
+  // any two tiles. Keeps the result only if it still has 5 forks, no short wrong ways, and more 3-way forks.
+  function addThreeWay(m, rng) {
+    const { W, H, sol, solSet, start, exit } = m;
+    const nbr = (open, c) => DIRS.filter(d => open[c] & d.b).map(d => (((c / W) | 0) + d.dy) * W + (c % W) + d.dx);
+    const setEdge = (open, a, b, on) => { const d = DIRS[dirIndex(a, b, W)]; if (on) { open[a] |= d.b; open[b] |= d.o; } else { open[a] &= ~d.b; open[b] &= ~d.o; } };
+    const treePath = (open, a, b) => { const prev = new Int32Array(W * H).fill(-1); prev[a] = a; const q = [a];
+      for (let i = 0; i < q.length && q[i] !== b; i++) for (const n of nbr(open, q[i])) if (prev[n] < 0) { prev[n] = q[i]; q.push(n); }
+      const p = []; for (let c = b; c !== a; c = prev[c]) p.push(c); p.push(a); return p.reverse(); };
+    const before = threeWayForks(m);
+    for (let attempt = 0; attempt < 40; attempt++) {
+      const two = m.forks.filter(si => si > 0 && nbr(m.open, sol[si]).length === 3);
+      if (!two.length) return false;
+      const si = two[Math.floor(rng() * two.length)], c = sol[si], x = c % W, y = (c / W) | 0;
+      const opts = DIRS.filter(d => !(m.open[c] & d.b) && x + d.dx >= 0 && y + d.dy >= 0 && x + d.dx < W && y + d.dy < H)
+        .map(d => (y + d.dy) * W + x + d.dx).filter(n => !solSet.has(n));
+      if (!opts.length) continue;
+      const n = opts[Math.floor(rng() * opts.length)], loop = treePath(m.open, c, n), cut = [];
+      for (let i = 1; i < loop.length - 1; i++) if (!(solSet.has(loop[i]) && solSet.has(loop[i + 1]))) cut.push([loop[i], loop[i + 1]]);
+      if (!cut.length) continue;
+      const open = m.open.slice(), [ra, rb] = cut[Math.floor(rng() * cut.length)];
+      setEdge(open, c, n, true); setEdge(open, ra, rb, false);
+      const sol2 = bfs(open, W, H, start, exit);
+      if (sol2.length !== sol.length || sol2.some((v, i) => v !== sol[i])) continue;
+      const forks = findForks(open, sol, W, H);
+      if (forks.length !== FORKS || minBranch(open, sol, W) < MIN_BRANCH) continue;
+      const m2 = Object.assign({}, m, { open, forks });
+      if (threeWayForks(m2) > before) { m.open = open; m.forks = forks; return true; }
+    }
+    return false;
+  }
+  function buildPath(seed, spec) {
+    const W = SIZE, H = SIZE, all = [];
+    for (let i = 0; i < CANDIDATES; i++) {
+      const rng = rngFrom(seed + "|path|" + i);
+      const open = kruskalMaze(W, H, rng);
+      const [start, exit] = pickEnds(rng, spec.tier, W, H);
+      const sol = bfs(open, W, H, start, exit), solSet = new Set(sol);
+      const m = { W, H, open, start, exit, sol, solSet, forks: findForks(open, sol, W, H) };
+      // Every daily trail has exactly 5 forks, no short wrong ways, and at least one 3-way fork.
+      if (m.forks.length !== FORKS || minBranch(open, sol, W) < MIN_BRANCH) continue;
+      for (let k = 0; k < 3 && threeWayForks(m) < THREE_WAY; k++) if (!addThreeWay(m, rng)) break;
+      if (threeWayForks(m) < THREE_WAY) continue;
+      m.dist = distanceToPath(m.open, W, H, solSet); m.score = scoreMaze(m); all.push(m);
+    }
+    // Try another batch in the rare case none qualify.
+    const cands = all;
+    if (!cands.length) return buildPath(seed + "+", spec);
+    // Take the toughest-looking candidates, have a simulated player try each a few times,
+    // and pick the day's maze by how many tries it actually needed. This finds deceptive mazes.
+    cands.sort((a, b) => a.score - b.score);
+    const top = cands.slice(-RATE_TOP), rr = rngFrom("rate|" + seed);
+    top.forEach(c => { let t = 0; for (let k = 0; k < 3; k++) t += simTries(c, rr); c.simTries = t / 3; });
+    top.sort((a, b) => a.simTries - b.simTries || a.score - b.score);
+    const m = top[Math.min(top.length - 1, Math.floor(spec.pct * top.length))];
+    return Object.assign(m, { guesses: [], cur: [m.start], done: false, won: false, sel: -1, hard: false,
+      edges: new Map(), cellStat: new Map() });
+  }
+  // Fog: a 9x9 corridor maze with 3 loops and at least 10 dead ends. You start in the middle; the flag is hidden
+  // somewhere at least 12 steps away. Each new tile you enter shows whether it is closer to the flag in a straight line.
+  function buildFog(seed) {
+    const W = 9, H = 9, start = ((H / 2) | 0) * W + ((W / 2) | 0);
+    let rng, open;
+    const nbrs = (open, c) => DIRS.filter(d => open[c] & d.b).map(d => (((c / W) | 0) + d.dy) * W + (c % W) + d.dx);
+    // Same depth rule as the game: walk back from a dead end along corridor tiles until a junction or the start.
+    const depthOf = (open, c) => { let depth = 1, prev = c, cur = nbrs(open, c)[0];
+      while (cur !== start && nbrs(open, cur).length === 2) { const next = nbrs(open, cur).find(v => v !== prev); prev = cur; cur = next; depth++; }
+      return depth; };
+    let fromStart, q0;
+    for (let i = 0; i < 400; i++) {
+      rng = rngFrom(seed + "|fog|" + i); open = genMaze(W, H, rng, 3);
+      fromStart = new Int16Array(W * H).fill(-1); q0 = [start]; fromStart[start] = 0;
+      for (let qi = 0; qi < q0.length; qi++) for (const n of nbrs(open, q0[qi])) if (fromStart[n] < 0) { fromStart[n] = fromStart[q0[qi]] + 1; q0.push(n); }
+      let dead = 0, unfair = false;
+      for (let c = 0; c < W * H; c++) {
+        if (c === start || nbrs(open, c).length !== 1) continue;
+        dead++;
+        // No dead end on your first step, and no long dead end two steps from the start.
+        if (fromStart[c] === 1 || (fromStart[c] === 2 && depthOf(open, c) >= 2)) unfair = true;
+      }
+      if (dead >= 10 && !unfair) break;
+    }
+    const far = []; for (let c = 0; c < W * H; c++) if (fromStart[c] >= 12) far.push(c);
+    const exit = far.length ? far[Math.floor(rng() * far.length)] : q0[q0.length - 1];
+    const sol = bfs(open, W, H, start, exit);
+    const toFlag = new Int16Array(W * H).fill(-1), q = [exit]; toFlag[exit] = 0;
+    for (let qi = 0; qi < q.length; qi++) {
+      const c = q[qi], x = c % W, y = (c / W) | 0;
+      for (const d of DIRS) { if (!(open[c] & d.b)) continue; const n = (y + d.dy) * W + x + d.dx; if (toFlag[n] < 0) { toFlag[n] = toFlag[c] + 1; q.push(n); } }
+    }
+    const par = sol.length - 1;
+    return { W, H, open, start, exit, sol, toFlag, par, hist: [start], visited: new Set([start]), heat: new Map(), deadEnds: [], done: false, won: false };
+  }
+  // Straight-line closeness: warmer if the new cell is nearer the flag than the cell you came from.
+  // Heat map: hot within 2 tiles of the flag, neutral within 4, cold beyond (straight line, ignoring walls).
+  // One step changes the distance by at most 1 tile, so hot and cold tiles can never touch.
+  const heatOf = c => { const d = Math.sqrt(crow(c, F.exit, F.W)); return d <= 2 ? "h" : d <= 4 ? "n" : "c"; };
+  const crow = (a, b, W) => { const dx = a % W - b % W, dy = ((a / W) | 0) - ((b / W) | 0); return dx * dx + dy * dy; };
+
+  const isOpenStep = (a, b) => { const d = dirIndex(a, b, P.W); return d >= 0 && !!(P.open[a] & DIRS[d].b); };
+  // How many cells from the start your route follows the hidden path exactly (index of the last matching cell).
+  function prefixEnd(route) {
+    let p = 0; while (p + 1 < route.length && p + 1 < P.sol.length && route[p + 1] === P.sol[p + 1]) p++;
+    return p;
+  }
+  // One circle per fork, in order from start to flag. Only the part of your try before its first mistake counts:
+  // g = you reached this fork and went the right way; x = you reached this fork and went the wrong way;
+  // n = you didn't reach this fork before your first mistake. Reaching the flag is shown separately (a flag).
+  function forkRow(route) {
+    const solved = isSolved(route), p = solved ? P.sol.length - 1 : prefixEnd(route), FK = P.forks;
+    return FK.map((si, k) => {
+      if (si > p) return "n";
+      return si === p ? "x" : "g";
+    });
+  }
+  // Solved means your route is exactly the hidden path.
+  const isSolved = route => route.length === P.sol.length && route.every((c, i) => c === P.sol[i]);
+  // On the maze, each try only shows what happened up to its first mistake: tiles along the hidden trail turn green,
+  // the tile you stepped onto by mistake turns orange if you could really walk there, and if that step went
+  // through a wall, only the wall appears. Nothing after your first mistake is shown. A tile keeps its best color across tries.
+  const RANK = { x: 1, y: 2, g: 3 };
+  function evalGuess(route) {
+    const solved = isSolved(route), p = solved ? route.length - 1 : prefixEnd(route);
+    P.offAt = solved ? -1 : route[p];
+    const mark = (c, st) => { if (!P.cellStat.has(c) || RANK[st] > RANK[P.cellStat.get(c)]) P.cellStat.set(c, st); };
+    for (let i = 0; i <= p; i++) mark(route[i], "g");
+    for (let i = 1; i <= p; i++) P.edges.set(edgeKey(route[i - 1], route[i]), "open");
+    if (!solved && p + 1 < route.length) {
+      // Follow your wrong turn: every tile you walk onto off the trail turns orange, until your try runs into a
+      // wall (which appears) or ends. Through a wall, you only learn about the wall, not what lies beyond it.
+      for (let i = p; i + 1 < route.length; i++) {
+        const a = route[i], b = route[i + 1], open = isOpenStep(a, b);
+        P.edges.set(edgeKey(a, b), open ? "open" : "wall");
+        if (!open || P.solSet.has(b)) break;
+        mark(b, "x");
+      }
+    }
+    // Walls between two trail tiles you've found: if they sit side by side but the trail doesn't pass straight
+    // between them, there's a wall there. Showing it explains why the trail goes around.
+    P.cellStat.forEach((st, c) => {
+      if (st !== "g") return;
+      const x = c % P.W, y = (c / P.W) | 0;
+      [[1, 0], [0, 1]].forEach(([dx, dy]) => {
+        if (x + dx >= P.W || y + dy >= P.H) return;
+        const n = (y + dy) * P.W + x + dx;
+        if (P.cellStat.get(n) === "g" && !isOpenStep(c, n)) P.edges.set(edgeKey(c, n), "wall");
+      });
+    });
+    return { won: solved };
+  }
+  function applyPathGuesses(list) {
+    P.guesses = []; P.edges.clear(); P.cellStat.clear(); P.done = false; P.won = false; P.offAt = -1;
+    for (const r of list) {
+      const res = evalGuess(r);
+      P.guesses.push(r);
+      if (res.won) { P.done = true; P.won = true; break; }
+      if (P.guesses.length >= MAX_GUESSES) { P.done = true; break; }
+    }
+    P.cur = [P.start];
+  }
+  function guessSummary(r) {
+    return { row: forkRow(r), won: isSolved(r) };
+  }
+
+  function applyFogHist(hist) {
+    F.hist = [F.start]; F.visited = new Set([F.start]); F.heat = new Map(); F.deadEnds = []; F.done = false; F.won = false;
+    for (let i = 1; i < hist.length; i++) if (!fogStep(hist[i], true)) break;
+  }
+  // Lanterns: every dead end you walk into burns one. When the 5th burns out, the fog wins.
+  const LANTERNS = 5;
+  const openings = c => DIRS.reduce((k, d) => k + (F.open[c] & d.b ? 1 : 0), 0);
+  // How far into its corridor a dead end is: count tiles back to the nearest junction (or the start).
+  function deadEndDepth(c) {
+    let depth = 1, prev = c, cur = -1;
+    const nb = t => DIRS.map(d => (F.open[t] & d.b) ? ((((t / F.W) | 0) + d.dy) * F.W + (t % F.W) + d.dx) : -1).filter(v => v >= 0);
+    cur = nb(c)[0];
+    while (cur !== F.start && openings(cur) === 2) { const next = nb(cur).find(v => v !== prev); prev = cur; cur = next; depth++; }
+    return depth;
+  }
+  // Tie-breaker: new tiles explored beyond the shortest path to the flag (lower is better).
+  // Fog result, two plain lines: torches left (how well you did) and tiles explored vs the shortest route (how quickly).
+  const torchesLeft = () => Math.max(0, LANTERNS - F.deadEnds.length);
+  function torchLine() {
+    const left = torchesLeft();
+    return "🔥".repeat(left) + "⬛".repeat(LANTERNS - left) + " " + left + " torch" + (left === 1 ? "" : "es") + " left";
+  }
+  function stepsLine() {
+    const explored = F.visited.size - 1;
+    return "👣 " + explored + " tile" + (explored === 1 ? "" : "s") + " explored " + (F.won ? "(shortest: " + F.par + ")" : "(flag not found)");
+  }
+  function fogStep(n, silent) {
+    if (F.done) return false;
+    const c = F.hist[F.hist.length - 1], d = dirIndex(c, n, F.W);
+    if (d < 0 || !(F.open[c] & DIRS[d].b)) return false;
+    const isNew = !F.visited.has(n);
+    if (isNew) F.heat.set(n, heatOf(n));
+    F.hist.push(n); F.visited.add(n);
+    if (n === F.exit) { F.done = true; F.won = true; }
+    else if (isNew && n !== F.start && openings(n) === 1) {
+      // F.deadEnds is the list of burned lanterns: a short dead end burns one (yellow), a long one burns two (gray).
+      if (deadEndDepth(n) === 1) F.deadEnds.push("y"); else F.deadEnds.push("x", "x");
+      F.lastBurn = deadEndDepth(n) === 1 ? 1 : 2;
+      if (F.deadEnds.length >= LANTERNS) F.done = true; // last lantern out: the fog wins
+    }
+    if (!silent) {
+      writeSave();
+      if (F.done) { recordFogResult(); openResult(); }
+      render();
+    }
+    return true;
+  }
+  // Shortest walk from the current cell to `target` using only explored cells.
+  function walkVisited(target) {
+    const s = F.hist[F.hist.length - 1];
+    if (s === target) return [];
+    const prev = new Map([[s, s]]), q = [s];
+    for (let qi = 0; qi < q.length; qi++) {
+      const c = q[qi]; if (c === target) break;
+      const x = c % F.W, y = (c / F.W) | 0;
+      for (const d of DIRS) {
+        if (!(F.open[c] & d.b)) continue;
+        const n = (y + d.dy) * F.W + x + d.dx;
+        if (!F.visited.has(n) || prev.has(n)) continue;
+        prev.set(n, c); q.push(n);
+      }
+    }
+    if (!prev.has(target)) return null;
+    const path = []; let c = target;
+    while (c !== s) { path.push(c); c = prev.get(c); }
+    return path.reverse();
+  }
+  // Tap anywhere you've explored to travel there for free; tap a lit edge cell to step into it.
+  // Fog hard mode: once you're in a corridor (a tile with exactly 2 openings), you must keep going forward
+  // until you reach a junction or a dead end. Returns the only allowed next tile, or -1 if you're free to move.
+  function corridorForward() {
+    if (!F.hard || F.hist.length < 2) return -1;
+    const cur = F.hist[F.hist.length - 1], came = F.hist[F.hist.length - 2];
+    if (cur === F.start || openings(cur) !== 2) return -1;
+    const x = cur % F.W, y = (cur / F.W) | 0;
+    for (const d of DIRS) { if (!(F.open[cur] & d.b)) continue; const n = (y + d.dy) * F.W + x + d.dx; if (n !== came) return n; }
+    return -1;
+  }
+  const CORRIDOR_MSG = "Hard mode: you're in a corridor, so keep going until a junction or a dead end.";
+  function fogGoto(target) {
+    if (F.done) return;
+    const fwd = corridorForward();
+    if (fwd >= 0 && target !== fwd) { flash(CORRIDOR_MSG); return; }
+    if (F.visited.has(target)) {
+      const w = walkVisited(target);
+      if (w && w.length) { w.forEach(n => fogStep(n, true)); writeSave(); render(); }
+      return;
+    }
+    const x = target % F.W, y = (target / F.W) | 0;
+    let best = null;
+    for (let i = 0; i < 4; i++) {
+      const nx = x - DIRS[i].dx, ny = y - DIRS[i].dy;
+      if (nx < 0 || ny < 0 || nx >= F.W || ny >= F.H) continue;
+      const nb = ny * F.W + nx;
+      if (!F.visited.has(nb) || !(F.open[nb] & DIRS[i].b)) continue;
+      const w = walkVisited(nb);
+      if (w && (!best || w.length < best.length)) best = w;
+    }
+    if (!best) return;
+    best.forEach(n => fogStep(n, true));
+    fogStep(target, false);
+  }
+
+  function newGame(seed, saved, spec) {
+    P = buildPath(seed, spec); F = buildFog(seed);
+    P.hard = hardPref();
+    if (saved && saved.path && Array.isArray(saved.path.guesses)) {
+      applyPathGuesses(saved.path.guesses);
+      if (saved.path.guesses.length) P.hard = !!saved.path.hard;
+    }
+    F.hard = readJSON(FOG_HARD_PREF) === true;
+    if (saved && saved.fog && Array.isArray(saved.fog.hist)) {
+      applyFogHist(saved.fog.hist);
+      if (saved.fog.hist.length > 1) F.hard = !!saved.fog.hard;
+    }
+  }
+
+  // ---------- path input ----------
+  function pathTap(c, dragging) {
+    if (P.done) return;
+    const cur = P.cur, k = cur.indexOf(c);
+    if (k >= 0) {
+      if (dragging) { if (k === cur.length - 2) cur.pop(); }
+      else cur.length = k + 1;
+      render(); return;
+    }
+    const last = cur[cur.length - 1];
+    if (last === P.exit) return;
+    const d = dirIndex(last, c, P.W);
+    if (d < 0) { if (!dragging) flash("Trails move one tile at a time. Tap a tile next to the end of your trail."); return; }
+    if (P.edges.get(edgeKey(last, c)) === "wall") { flash("You can't step through a wall you've already found."); return; }
+    cur.push(c); P.showLast = false; render();
+  }
+  function hardPref() { return readJSON(HARD_PREF) === true; }
+  // Hard mode, like Wordle's: every fork you've gotten green or yellow must be passed again, choosing the same way.
+  function hardViolation(route) {
+    for (let k = 0; k < P.forks.length; k++) {
+      if (!P.guesses.some(r => { const c = forkRow(r)[k]; return c === "g" || c === "y"; })) continue;
+      const si = P.forks[k], j = route.indexOf(P.sol[si]);
+      if (j < 0 || route[j + 1] !== P.sol[si + 1]) return "Hard mode: keep every fork you've already gotten green.";
+    }
+    return "";
+  }
+  function submitPath() {
+    if (P.done || P.cur.length < 2 || P.cur[P.cur.length - 1] !== P.exit) return;
+    if (P.cur.length !== P.sol.length) { flash("Your trail is " + P.cur.length + " tiles. Today's trail is exactly " + P.sol.length + "."); return; }
+    if (P.hard) { const v = hardViolation(P.cur); if (v) { flash(v); return; } }
+    const route = P.cur.slice();
+    const res = evalGuess(route);
+    P.guesses.push(route);
+    if (res.won) { P.done = true; P.won = true; }
+    else if (P.guesses.length >= MAX_GUESSES) P.done = true;
+    P.cur = [P.start]; P.sel = -1; P.showLast = true;
+    writeSave();
+    if (P.done) { recordResult(); openResult(); }
+    render();
+  }
+
+  // ---------- drawing ----------
+  const canvas = document.getElementById("board"), ctx = canvas.getContext("2d");
+  let size = 400, M = 8;
+  function resize() {
+    const w = Math.min(canvas.parentElement.clientWidth, 540);
+    const dpr = window.devicePixelRatio || 1;
+    size = w; canvas.width = Math.round(w * dpr); canvas.height = Math.round(w * dpr);
+    canvas.style.width = w + "px"; canvas.style.height = w + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    draw();
+  }
+  function tokens() {
+    const s = getComputedStyle(document.documentElement), t = {};
+    ["--panel", "--ink", "--muted", "--grid", "--hedge", "--route", "--hit", "--hit-soft", "--near", "--near-soft", "--miss", "--miss-soft", "--bad", "--fog", "--glimpse", "--alt", "--alt-soft", "--wrong", "--wrong-soft", "--partial", "--hot", "--neutral", "--cold", "--start", "--bg"].forEach(k => t[k.slice(2)] = s.getPropertyValue(k).trim());
+    return t;
+  }
+  function geom(W) { const cs = (size - 2 * M) / W; return { cs, cx: i => M + (i % W + 0.5) * cs, cy: i => M + (((i / W) | 0) + 0.5) * cs }; }
+  function wallSeg(i, d, W, cs) {
+    const x = M + (i % W) * cs, y = M + ((i / W) | 0) * cs;
+    if (d === 0) return [x, y, x + cs, y];
+    if (d === 1) return [x + cs, y, x + cs, y + cs];
+    if (d === 2) return [x, y + cs, x + cs, y + cs];
+    return [x, y, x, y + cs];
+  }
+  function line(seg, color, w, dash) {
+    ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = w; ctx.lineCap = "round"; ctx.setLineDash(dash || []);
+    ctx.moveTo(seg[0], seg[1]); ctx.lineTo(seg[2], seg[3]); ctx.stroke(); ctx.setLineDash([]);
+  }
+  function polyline(cells, g, color, w, dash, alpha) {
+    if (cells.length < 2) return;
+    ctx.save(); ctx.globalAlpha = alpha == null ? 1 : alpha;
+    ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = w; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.setLineDash(dash || []);
+    ctx.moveTo(g.cx(cells[0]), g.cy(cells[0]));
+    for (let i = 1; i < cells.length; i++) ctx.lineTo(g.cx(cells[i]), g.cy(cells[i]));
+    ctx.stroke(); ctx.restore();
+  }
+  function dot(i, g, r, color) { ctx.beginPath(); ctx.fillStyle = color; ctx.arc(g.cx(i), g.cy(i), r, 0, Math.PI * 2); ctx.fill(); }
+  function flag(i, g, t, scale) {
+    const x = g.cx(i), y = g.cy(i), s = g.cs * 0.26 * (scale || 1);
+    ctx.strokeStyle = t.ink; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x - s * 0.6, y + s * 1.1); ctx.lineTo(x - s * 0.6, y - s * 1.1); ctx.stroke();
+    ctx.fillStyle = t.hit; ctx.beginPath(); ctx.moveTo(x - s * 0.6, y - s * 1.1); ctx.lineTo(x + s * 1.1, y - s * 0.55); ctx.lineTo(x - s * 0.6, y); ctx.closePath(); ctx.fill();
+  }
+  function drawAllWalls(G, t, g, color, w, alpha) {
+    ctx.save(); ctx.globalAlpha = alpha;
+    for (let i = 0; i < G.W * G.H; i++) for (let d = 0; d < 4; d++) {
+      if (G.open[i] & DIRS[d].b) continue;
+      if (d === 0 || d === 3 || (d === 1 && i % G.W === G.W - 1) || (d === 2 && ((i / G.W) | 0) === G.H - 1)) line(wallSeg(i, d, G.W, g.cs), color, w);
+    }
+    ctx.restore();
+  }
+  function draw() {
+    if (!P) return;
+    const t = tokens();
+    ctx.clearRect(0, 0, size, size);
+    if (mode === "path") drawPath(t); else drawFog(t);
+  }
+  // A trail marker: three stacked stones.
+  function drawCairn(x, y, cs, bold, t) {
+    const stones = [[0, 0.17, 0.2, 0.09], [0.01, 0.02, 0.15, 0.075], [-0.01, -0.11, 0.1, 0.06]];
+    ctx.save(); ctx.globalAlpha = bold ? 1 : 0.45; ctx.setLineDash([]);
+    stones.forEach(([dx, dy, rx, ry]) => {
+      ctx.beginPath(); ctx.ellipse(x + dx * cs, y + dy * cs, rx * cs, ry * cs, 0, 0, Math.PI * 2);
+      ctx.fillStyle = bold ? t.ink : t.muted; ctx.fill();
+      ctx.lineWidth = Math.max(1.5, cs * 0.03); ctx.strokeStyle = t.panel; ctx.stroke();
+    });
+    ctx.restore();
+  }
+  function drawPath(t) {
+    const G = P, g = geom(G.W), cs = g.cs, N = G.W * G.H;
+    ctx.fillStyle = t.panel; ctx.fillRect(0, 0, size, size);
+    // Walked cells: green if on the hidden path, gray if not.
+    G.cellStat.forEach((st, i) => {
+      ctx.fillStyle = st === "g" ? t["hit-soft"] : st === "y" ? t["alt-soft"] : t["wrong-soft"];
+      ctx.fillRect(M + (i % G.W) * cs + 1, M + ((i / G.W) | 0) * cs + 1, cs - 2, cs - 2);
+    });
+    // internal edges
+    for (let i = 0; i < N; i++) {
+      const x = i % G.W, y = (i / G.W) | 0;
+      for (const d of [1, 2]) {
+        if ((d === 1 && x === G.W - 1) || (d === 2 && y === G.H - 1)) continue;
+        const n = i + (d === 1 ? 1 : G.W), k = G.edges.get(edgeKey(i, n)), seg = wallSeg(i, d, G.W, cs);
+        if (k === "wall") line(seg, t.hedge, Math.max(4, cs * 0.1));
+        else if (!k) line(seg, t.grid, 1, [3, 4]);
+      }
+    }
+    if (G.done) drawAllWalls(G, t, g, t.hedge, Math.max(3, cs * 0.07), 0.35);
+    ctx.strokeStyle = t.hedge; ctx.lineWidth = Math.max(4, cs * 0.1); ctx.strokeRect(M, M, size - 2 * M, size - 2 * M);
+    if (G.done && !G.won) polyline(G.sol, g, t.hit, cs * 0.12, [cs * 0.15, cs * 0.15], 0.9);
+    // Tapping a played row shows that route as a dashed line.
+    if (G.sel >= 0 && G.guesses[G.sel]) polyline(G.guesses[G.sel], g, t.muted, cs * 0.12, [cs * 0.12, cs * 0.12], 0.9);
+    // Trail marker: a small stack of stones where the newest try (or the tapped row's try) went wrong.
+    const focus = G.sel >= 0 ? G.sel : G.guesses.length - 1;
+    if (!G.done && G.guesses[focus] && !isSolved(G.guesses[focus])) {
+      const c = G.guesses[focus][prefixEnd(G.guesses[focus])];
+      drawCairn(g.cx(c), g.cy(c) - cs * 0.02, cs, true, t);
+    }
+    // Numbered fork badges, colored like the result squares, for the newest try (or the tapped row).
+    // Forks that try never reached stay hidden until the game is over.
+    if (G.guesses.length) {
+      const row = forkRow(G.guesses[focus]), col = { g: t.hit, x: t.partial, n: t.panel };
+      G.forks.forEach((si, k) => {
+        // Only mark forks your try actually walked onto before its first mistake, so the board never
+        // shows where a fork is before you've found it.
+        if (!G.done && (row[k] === "n" || (!isSolved(G.guesses[focus]) && si > prefixEnd(G.guesses[focus])))) return;
+        const c = G.sol[si], r = cs * 0.17, x = M + (c % G.W) * cs + r + cs * 0.06, y = M + ((c / G.W) | 0) * cs + r + cs * 0.06;
+        ctx.setLineDash([]);
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = col[row[k]]; ctx.fill();
+        ctx.lineWidth = Math.max(1.5, cs * (row[k] === "n" ? 0.04 : 0.03)); ctx.strokeStyle = row[k] === "n" ? t.muted : t.panel; ctx.stroke();
+        ctx.fillStyle = row[k] === "n" ? t.muted : "#fff"; ctx.font = "700 " + Math.round(r * 1.25) + "px " + (getComputedStyle(document.body).fontFamily || "sans-serif");
+        ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(String(k + 1), x, y + r * 0.06);
+      });
+    }
+    const route = G.done ? (G.won ? G.guesses[G.guesses.length - 1] : []) : G.cur;
+    polyline(route, g, G.done ? t.hit : t.route, cs * 0.2, null, 0.95);
+    flag(G.exit, g, t);
+    dot(G.start, g, cs * 0.2, t.route);
+    if (!G.done && route.length > 1) { dot(route[route.length - 1], g, cs * 0.15, t.route); dot(route[route.length - 1], g, cs * 0.07, t.panel); }
+  }
+  function drawFog(t) {
+    const G = F, g = geom(G.W), cs = g.cs, N = G.W * G.H;
+    ctx.fillStyle = t.fog; ctx.fillRect(0, 0, size, size);
+    const glimpsed = new Set();
+    G.visited.forEach(c => {
+      const x = c % G.W, y = (c / G.W) | 0;
+      DIRS.forEach(d => { if (G.open[c] & d.b) glimpsed.add((y + d.dy) * G.W + x + d.dx); });
+    });
+    for (let i = 0; i < N; i++) {
+      let fill = null;
+      if (G.visited.has(i)) { const h = G.heat.get(i); fill = i === G.start ? t.start : h === "h" ? t.hot : h === "n" ? t.neutral : h === "c" ? t.cold : t.panel; }
+      else if (glimpsed.has(i)) fill = t.glimpse; else if (G.done) fill = t.glimpse;
+      if (!fill) continue;
+      ctx.fillStyle = fill;
+      ctx.fillRect(M + (i % G.W) * cs, M + ((i / G.W) | 0) * cs, cs + 0.5, cs + 0.5);
+    }
+    if (G.done) drawAllWalls(G, t, g, t.hedge, Math.max(2, cs * 0.06), 0.45);
+    G.visited.forEach(c => { for (let d = 0; d < 4; d++) if (!(G.open[c] & DIRS[d].b)) line(wallSeg(c, d, G.W, cs), t.hedge, Math.max(3, cs * 0.1)); });
+    if (G.done) polyline(G.sol, g, t.hit, cs * 0.1, [cs * 0.12, cs * 0.12], 0.85);
+    polyline(G.hist, g, t.route, cs * 0.14, null, 0.55);
+    // The flag stays hidden until you find it or the run ends.
+    const pos = G.hist[G.hist.length - 1];
+    if (G.won) {
+      // Found it: light the flag's tile green, ring it, and draw a bigger flag above your (smaller) marker.
+      const x0 = M + (G.exit % G.W) * cs, y0 = M + ((G.exit / G.W) | 0) * cs;
+      ctx.fillStyle = t["hit-soft"]; ctx.fillRect(x0 + 1, y0 + 1, cs - 2, cs - 2);
+      ctx.beginPath(); ctx.strokeStyle = t.hit; ctx.lineWidth = Math.max(3, cs * 0.08); ctx.setLineDash([]);
+      ctx.arc(g.cx(G.exit), g.cy(G.exit), cs * 0.46, 0, Math.PI * 2); ctx.stroke();
+      dot(pos, g, cs * 0.14, t.route);
+      flag(G.exit, g, t, 1.45);
+    } else {
+      if (G.done) flag(G.exit, g, t);
+      dot(pos, g, cs * 0.26, t.route); dot(pos, g, cs * 0.1, t.panel);
+    }
+  }
+
+  // ---------- pointer + keys ----------
+  function cellAt(ev) {
+    const G = mode === "path" ? P : F, r = canvas.getBoundingClientRect();
+    const cs = (r.width - 2 * M * (r.width / size)) / G.W, m = M * (r.width / size);
+    const x = Math.floor((ev.clientX - r.left - m) / cs), y = Math.floor((ev.clientY - r.top - m) / cs);
+    if (x < 0 || y < 0 || x >= G.W || y >= G.H) return -1;
+    return y * G.W + x;
+  }
+  let dragging = false, lastDragCell = -1;
+  canvas.addEventListener("pointerdown", ev => {
+    const c = cellAt(ev); if (c < 0) return;
+    if (mode === "path") { dragging = true; lastDragCell = c; canvas.setPointerCapture(ev.pointerId); pathTap(c, false); }
+    else fogGoto(c);
+  });
+  canvas.addEventListener("pointermove", ev => {
+    if (!dragging || mode !== "path") return;
+    const c = cellAt(ev); if (c < 0 || c === lastDragCell) return;
+    lastDragCell = c; pathTap(c, true);
+  });
+  ["pointerup", "pointercancel"].forEach(e => canvas.addEventListener(e, () => { dragging = false; }));
+
+  function moveDir(di) {
+    const G = mode === "path" ? P : F;
+    const from = mode === "path" ? P.cur[P.cur.length - 1] : F.hist[F.hist.length - 1];
+    const x = from % G.W + DIRS[di].dx, y = ((from / G.W) | 0) + DIRS[di].dy;
+    if (x < 0 || y < 0 || x >= G.W || y >= G.H) return;
+    const n = y * G.W + x;
+    if (mode === "path") { if (P.cur.length > 1 && P.cur[P.cur.length - 2] === n) { P.cur.pop(); render(); } else pathTap(n, false); }
+    else { const fwd = corridorForward(); if (fwd >= 0 && n !== fwd) { flash(CORRIDOR_MSG); return; } fogStep(n, false); }
+  }
+  document.addEventListener("keydown", ev => {
+    if (!$("howModal").hidden) { if (ev.key === "Escape") { ev.preventDefault(); closeHow(); } return; }
+    if (!$("resultModal").hidden) { if (ev.key === "Escape") { ev.preventDefault(); closeResult(); } return; }
+    const map = { ArrowUp: 0, ArrowRight: 1, ArrowDown: 2, ArrowLeft: 3, w: 0, d: 1, s: 2, a: 3 };
+    if (ev.key in map) { ev.preventDefault(); moveDir(map[ev.key]); return; }
+    if (mode === "path" && ev.key === "Enter") { ev.preventDefault(); submitPath(); }
+    if (mode === "path" && ev.key === "Backspace") { ev.preventDefault(); undo(); }
+  });
+  function undo() { if (!P.done && P.cur.length > 1) { P.cur.pop(); render(); } }
+  document.getElementById("undoBtn").addEventListener("click", undo);
+  document.getElementById("clearBtn").addEventListener("click", () => { if (!P.done) { P.cur = [P.start]; render(); } });
+  document.getElementById("submitBtn").addEventListener("click", submitPath);
+
+  // ---------- UI ----------
+  const $ = id => document.getElementById(id);
+  let flashMsg = "", flashTimer = 0;
+  function flash(msg) { flashMsg = msg; clearTimeout(flashTimer); flashTimer = setTimeout(() => { flashMsg = ""; render(); }, 1800); render(); }
+
+  const FLAG_SVG = '<svg viewBox="0 0 22 26" aria-hidden="true"><path d="M5 24 V3" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M5 3 L19 8.5 L5 14 Z" fill="currentColor"/></svg>';
+  function shareText() {
+    const day = now.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    const head = "The Daily Maze · " + (mode === "path" ? "Trail" : "Fog") + (practice ? " practice" : " · " + day) + ((mode === "path" ? P.hard : F.hard) ? " · Hard mode" : "");
+    if (mode === "path") {
+      // One line per try: a circle for each of the trail's 5 forks, plus a flag if that try reached it.
+      const em = { g: "🟢", x: "🟡", n: "⚪" }, lines = [head];
+      P.guesses.forEach(r => { const row = forkRow(r);
+        lines.push(row.map(c => em[c]).join("") + (isSolved(r) ? "🏁" : "")); });
+      lines.push(P.won ? "Solved on try " + P.guesses.length + " of " + MAX_GUESSES : "Not solved in " + MAX_GUESSES + " tries");
+      return lines.join("\n");
+    }
+    return head + "\n" + (F.won ? "🏁 found the flag" : "🌫️ lost in the fog") + "\n" + torchLine() + "\n" + stepsLine();
+  }
+
+  function render() {
+    $("meta").innerHTML = practice ? "<b>Practice</b>" : "<b>#" + puzzleNo + "</b> · " + dateLabel;
+    $("tab-path").setAttribute("aria-selected", mode === "path");
+    $("tab-fog").setAttribute("aria-selected", mode === "fog");
+    $("pathControls").hidden = mode !== "path";
+    $("pathSettings").hidden = false;
+    $("pathLegend").hidden = mode !== "path";
+    const fogMode = mode === "fog", hardOn = fogMode ? F.hard : P.hard;
+    const locked = fogMode ? (F.hist.length > 1 || F.done) : (P.guesses.length > 0 || P.done);
+    $("hardToggle").checked = hardOn;
+    $("hardToggle").disabled = locked;
+    // The explanation only shows while hard mode is on.
+    $("hardNote").hidden = !hardOn;
+    $("hardNote").textContent = fogMode ? "Once you enter a corridor, you must follow it to a junction or dead end." : "Keep every fork you've gotten green.";
+    renderStats();
+    $("fogControls").hidden = mode !== "fog";
+    $("howPath").hidden = mode !== "path";
+    $("howFog").hidden = mode !== "fog";
+    $("guesses").hidden = mode !== "path";
+    $("practiceBtn").textContent = practice ? "Back to today's mazes" : "Play a practice maze";
+    $("footNote").textContent = practice ? "Practice mazes are random and are not saved." : "Everyone gets the same two mazes today.";
+    $("tester").hidden = !practice;
+
+    const st = $("status");
+    if (mode === "path") {
+      const n = Math.min(P.guesses.length + 1, MAX_GUESSES);
+      const atFlag = P.cur.length > 1 && P.cur[P.cur.length - 1] === P.exit, ready = atFlag && P.cur.length === P.sol.length;
+      let msg;
+      if (P.done) msg = P.won ? "Solved!" : "Out of tries. The hidden trail is dashed.";
+      else if (flashMsg) msg = flashMsg;
+      else if (P.showLast && P.guesses.length && P.cur.length < 2) {
+        const last = guessSummary(P.guesses[P.guesses.length - 1]);
+        msg = last.row.every(x => x === "g")
+          ? "Every choice was right, but your trail left the hidden trail between forks. Follow it exactly."
+          : "The trail marker shows where you went wrong. Keep the green tiles and try a different way there.";
+      }
+      else if (ready) msg = "Ready to submit.";
+      else if (atFlag) msg = (P.cur.length > P.sol.length ? "Too long" : "Too short") + ": the trail is exactly " + P.sol.length + " tiles.";
+      else if (P.cur.length < 2) msg = "Draw a trail from the blue dot to the flag.";
+      else if (P.cur.length > P.sol.length) msg = "Too long: the trail is exactly " + P.sol.length + " tiles.";
+      else msg = "Keep going to the flag.";
+      const lenTag = P.done ? "" : "<b class=\"len" + (P.cur.length > P.sol.length || (atFlag && !ready) ? " over" : ready ? " ok" : "") + "\">" + P.cur.length + " / " + P.sol.length + " tiles</b> ";
+      st.innerHTML = "<span class=\"hint\">" + lenTag + msg + "</span>";
+      $("submitBtn").disabled = P.done || !ready;
+      $("undoBtn").disabled = P.done || P.cur.length < 2;
+      $("clearBtn").disabled = P.done || P.cur.length < 2;
+      const ol = $("guesses"); ol.innerHTML = "";
+      // Wordle-style grid: 6 rows of 6. Played rows show colors; the current row fills in as you draw lines.
+      for (let idx = 0; idx < MAX_GUESSES; idx++) {
+        const li = document.createElement("li");
+        let cells;
+        if (idx < P.guesses.length) {
+          cells = guessSummary(P.guesses[idx]).row;
+          if (idx === P.sel) li.className = "sel";
+          li.title = "Show this guess on the maze";
+          li.addEventListener("click", () => { P.sel = P.sel === idx ? -1 : idx; render(); });
+        } else {
+          li.className = "blank";
+          cells = Array.from({ length: FORKS }, () => "empty");
+        }
+        const fin = idx < P.guesses.length ? (isSolved(P.guesses[idx]) ? " on" : "") : " empty";
+        li.innerHTML = "<span class=\"forks\">" + cells.map(c => "<b class=\"fk " + c + "\"></b>").join("") +
+          "<b class=\"fin" + fin + "\" aria-label=\"" + (fin === " on" ? "reached the flag" : "flag not reached") + "\">" + FLAG_SVG + "</b></span>";
+        ol.appendChild(li);
+      }
+    } else {
+      const left = Math.max(0, LANTERNS - F.deadEnds.length);
+      // Lanterns that went dark since the last redraw flicker out.
+      const wasLeft = shownLanterns == null || shownLanterns < left ? left : shownLanterns;
+      $("lanterns").setAttribute("aria-label", left + " of " + LANTERNS + " torches left");
+      $("lanterns").innerHTML = "Torches " + Array.from({ length: LANTERNS }, (_, k) =>
+        "<span class=\"lan" + (k < left ? "" : k < wasLeft ? " out flicker" : " out") + "\">🔥</span>").join("");
+      shownLanterns = left;
+      let msg;
+      const used = Math.min(LANTERNS, F.deadEnds.length);
+      const shortN = F.deadEnds.filter(x => x === "y").length, longN = (F.deadEnds.length - shortN) / 2;
+      const ends = [shortN ? shortN + " short dead end" + (shortN === 1 ? "" : "s") : "", longN ? longN + " long dead end" + (longN === 1 ? "" : "s") : ""].filter(Boolean).join(" and ");
+      if (F.done && F.won) msg = "🏁 You found the flag with " + left + " torch" + (left === 1 ? "" : "es") + " left, exploring " + (F.visited.size - 1) + " tiles. The shortest route was " + F.par + ".";
+      else if (F.done) msg = "Your last torch went out. The fog wins. The shortest path is dashed.";
+      else if (F.deadEnds.length) msg = F.lastBurn === 2 ? "Long dead end! 2 torches went out." : "Dead end! A torch went out.";
+      else msg = "The flag is hidden. Tiles get hotter the closer they are to it.";
+      st.innerHTML = "<span>" + msg + "</span>";
+    }
+
+    const done = mode === "path" ? P.done : F.done, won = mode === "path" ? P.won : F.won;
+    $("resultBtn").hidden = !done || !$("resultModal").hidden;
+    if (!done) $("resultModal").hidden = true;
+    if (done) {
+      $("resultTitle").textContent = won ? (mode === "path" ? "You found the trail." : "You found the flag.") : (mode === "path" ? "The trail stayed hidden today." : "The fog won this time.");
+      $("shareText").textContent = shareText();
+      const fog = mode === "fog";
+      const st = computeStats(fog ? FOG_STATS : STATS_STORE, fog ? [5, 4, 3, 2, 1] : Array.from({ length: MAX_GUESSES }, (_, i) => i + 1));
+      $("resultStats").hidden = practice;
+      $("rsPlayed").textContent = st.played; $("rsWin").textContent = st.winPct; $("rsStreak").textContent = st.cur; $("rsMax").textContent = st.max;
+    }
+    draw();
+  }
+
+  let statsOpen = false;
+  let shownLanterns = null; // how many lanterns were lit at the last redraw
+  function renderStats() {
+    $("stats").hidden = !statsOpen;
+    $("statsBtn").setAttribute("aria-expanded", statsOpen);
+    if (!statsOpen) return;
+    const fog = mode === "fog";
+    const buckets = fog ? [5, 4, 3, 2, 1] : Array.from({ length: MAX_GUESSES }, (_, i) => i + 1);
+    const s = computeStats(fog ? FOG_STATS : STATS_STORE, buckets);
+    $("statsTitle").textContent = fog ? "Fog stats" : "Trail stats";
+    $("stDistLabel").textContent = fog ? "Torches remaining" : "Tries to solve";
+    $("stPlayed").textContent = s.played;
+    $("stWin").textContent = s.winPct;
+    $("stStreak").textContent = s.cur;
+    $("stMax").textContent = s.max;
+    const top = Math.max(1, ...s.dist), box = $("stDist"); box.innerHTML = "";
+    s.dist.forEach((n, i) => {
+      const row = document.createElement("div");
+      row.className = "dist-row" + (s.today && s.today.won && s.today.g === buckets[i] ? " today" : "");
+      row.innerHTML = "<span>" + buckets[i] + "</span><i style=\"width:" + Math.max(8, n / top * 100) + "%\">" + n + "</i>";
+      box.appendChild(row);
+    });
+  }
+  $("statsBtn").addEventListener("click", () => { statsOpen = !statsOpen; render(); });
+  // How to play popup: opens the first time you open each game, and from the header button any time.
+  const SEEN = m => "mazedle-seen-howto-" + m;
+  let howReturnFocus = null;
+  function openHow() {
+    howReturnFocus = document.activeElement; $("howModal").hidden = false; render();
+    // Start at the top: focus the close button without scrolling, then reset any scroll.
+    try { $("howClose").focus({ preventScroll: true }); } catch (e) {}
+    const m = $("howModal"), card = m.querySelector(".modal-card");
+    m.scrollTop = 0; if (card) card.scrollTop = 0;
+  }
+  function closeHow() { $("howModal").hidden = true; writeJSON(SEEN(mode), true); try { (howReturnFocus || $("board")).focus(); } catch (e) {} }
+  function maybeShowHow() { if (readJSON(SEEN(mode)) !== true) openHow(); }
+  $("howBtn").addEventListener("click", openHow);
+  // Result popup: opens when a game ends; "See the board" hides it, "Show result" brings it back.
+  function openResult() { $("resultModal").hidden = false; render(); try { $("shareBtn").focus(); } catch (e) {} }
+  function closeResult() { $("resultModal").hidden = true; render(); try { $("resultBtn").focus(); } catch (e) {} }
+  $("resultBtn").addEventListener("click", openResult);
+  $("resultClose").addEventListener("click", closeResult);
+  $("resultOk").addEventListener("click", closeResult);
+  $("resultModal").addEventListener("click", ev => { if (ev.target === $("resultModal")) closeResult(); });
+  $("howClose").addEventListener("click", closeHow);
+  $("howOk").addEventListener("click", closeHow);
+  $("howModal").addEventListener("click", ev => { if (ev.target === $("howModal")) closeHow(); });
+  $("hardToggle").addEventListener("change", ev => {
+    if (mode === "fog") {
+      if (F.hist.length > 1 || F.done) { ev.target.checked = F.hard; return; }
+      F.hard = ev.target.checked; writeJSON(FOG_HARD_PREF, F.hard);
+    } else {
+      if (P.guesses.length || P.done) { ev.target.checked = P.hard; return; }
+      P.hard = ev.target.checked; writeJSON(HARD_PREF, P.hard);
+    }
+    render();
+  });
+
+  $("shareBtn").addEventListener("click", () => {
+    const text = $("shareText").textContent;
+    const done = () => { $("copied").hidden = false; setTimeout(() => $("copied").hidden = true, 1800); };
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents($("shareText")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
+    try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
+  });
+  document.querySelectorAll(".modes button").forEach(b => b.addEventListener("click", () => { mode = b.dataset.mode; $("resultModal").hidden = true; render(); maybeShowHow(); }));
+  // Practice mode doubles as a difficulty tester: pick which weekday's difficulty to play.
+  // Practice: a brand-new random maze for both games, at a random difficulty, every time.
+  function newPractice() { newGame("practice-" + Math.random().toString(36).slice(2), null, LEVELS[Math.floor(Math.random() * LEVELS.length)]); render(); }
+  $("practiceBtn").addEventListener("click", () => {
+    practice = !practice;
+    if (practice) newPractice();
+    else { newGame(dateKey, loadSave(), LEVELS[dailyLevel(dateKey)]); render(); }
+  });
+  $("newPracticeBtn").addEventListener("click", newPractice);
+
+  // theme changes
+  try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw); } catch (e) {}
+  new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  new ResizeObserver(resize).observe(canvas.parentElement);
+
+  const firstSave = loadSave();
+  // If today's game has no save (e.g. the rules changed), drop any stale stats entry for today so the replay counts.
+  [[firstSave.path, STATS_STORE], [firstSave.fog, FOG_STATS]].forEach(([saved, store]) => {
+    if (saved) return; const s = readJSON(store); if (s && s.history && s.history[dateKey]) { delete s.history[dateKey]; writeJSON(store, s); }
+  });
+  newGame(dateKey, firstSave, LEVELS[dailyLevel(dateKey)]);
+  recordResult(); recordFogResult();
+  resize();
+  render();
+  maybeShowHow();
+})();
+</script>
+
+</body></html>
