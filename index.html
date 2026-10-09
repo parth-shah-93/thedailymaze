@@ -22,9 +22,9 @@
 <meta property="og:image:alt" content="The Daily Maze: a hedge-green maze board with a blue trail leading to a flag">
 <meta name="twitter:card" content="summary_large_image">
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="preload" href="/fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/unbounded-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts/fonts.css">
 <style>
 /* Layout: one narrow play column, a hedge-maze board as the centerpiece, controls and guess log stacked beneath */
 :root {
@@ -266,7 +266,7 @@ details ul { padding-left: 18px; }
   <div class="tester" id="tester" hidden>
     <button class="btn" id="newPracticeBtn">New practice maze</button>
   </div>
-  <footer class="sitefoot"><span><a href="mailto:support@thedailymaze.com?subject=The%20Daily%20Maze%20feedback">Contact</a> · © 2026 The Daily Maze</span></footer>
+  <footer class="sitefoot"><span><a href="/about/">About</a> · <a href="/privacy/">Privacy</a> · <a href="mailto:support@thedailymaze.com?subject=The%20Daily%20Maze%20feedback">Contact</a></span><span>© 2026 The Daily Maze</span></footer>
 </div>
   <div class="modal" id="resultModal" hidden role="dialog" aria-modal="true" aria-labelledby="resultTitle">
     <div class="modal-card">

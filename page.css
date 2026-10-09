@@ -1,0 +1,31 @@
+/* Shared look for the About, Privacy and not-found pages: same palette and fonts as the game. */
+:root {
+  --bg: #e9eee8; --panel: #f7f9f5; --ink: #1b2a24; --muted: #5e6f66; --grid: #c3cec6;
+  --hedge: #24503a; --route: #2c62c9; --hit: #3d9a5b;
+  --font-display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101613; --panel: #19221d; --ink: #e2eae4; --muted: #93a59a; --grid: #34433a;
+    --hedge: #8fcaa2; --route: #6c9dff; --hit: #4fb46e; color-scheme: dark; }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.6; }
+.wrap { max-width: 620px; margin: 0 auto; padding: 18px 16px 40px; display: flex; flex-direction: column; gap: 18px; }
+.top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-bottom: 2px solid var(--hedge); padding-bottom: 10px; }
+.brand { font-family: var(--font-display); font-weight: 700; font-size: 24px; letter-spacing: -0.02em; color: var(--hedge); text-decoration: none; }
+.back { font-weight: 600; color: var(--route); text-decoration: none; font-size: 15px; }
+.back:hover, a:hover { text-decoration: underline; }
+h1 { font-family: var(--font-display); font-weight: 500; font-size: 26px; line-height: 1.2; color: var(--hedge); margin: 8px 0 0; text-wrap: balance; }
+h2 { font-size: 18px; margin: 10px 0 -6px; }
+p, ul { margin: 0; } ul { padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+a { color: var(--route); font-weight: 600; text-decoration: none; }
+.card { background: var(--panel); border: 2px solid var(--hedge); border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.muted { color: var(--muted); font-size: 14px; }
+.btn { display: inline-block; align-self: flex-start; background: var(--route); color: #fff; font-weight: 600; padding: 11px 18px; border-radius: 9px; }
+.btn:hover { text-decoration: none; filter: brightness(1.08); }
+.sitefoot { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 14px; font-size: 13px; color: var(--muted); padding-top: 12px; border-top: 1px solid var(--grid); margin-top: 8px; }
+.sitefoot a { font-weight: 600; }
+a:focus-visible { outline: 3px solid var(--route); outline-offset: 2px; border-radius: 4px; }
