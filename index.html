@@ -135,7 +135,9 @@ details p, details ul { margin: 8px 0 0; color: var(--ink); }
 details ul { padding-left: 18px; }
 .key { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; }
 .foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
-.sitefoot { text-align: center; font-size: 12px; color: var(--muted); padding-top: 12px; border-top: 1px solid var(--grid); }
+.sitefoot { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 14px; text-align: center; font-size: 12px; color: var(--muted); padding-top: 12px; border-top: 1px solid var(--grid); }
+.sitefoot a { color: var(--route); font-weight: 600; text-decoration: none; }
+.sitefoot a:hover { text-decoration: underline; }
 .linkbtn { font: inherit; background: none; border: 0; color: var(--route); cursor: pointer; padding: 0; font-weight: 600; }
 .tester { display: flex; flex-direction: column; gap: 8px; background: var(--panel); border-radius: 10px; padding: 10px 14px; font-size: 13px; }
 .tester-label { color: var(--muted); }
@@ -259,7 +261,7 @@ details ul { padding-left: 18px; }
   <div class="tester" id="tester" hidden>
     <button class="btn" id="newPracticeBtn">New practice maze</button>
   </div>
-  <footer class="sitefoot">New mazes every midnight, your time · © 2026 The Daily Maze</footer>
+  <footer class="sitefoot"><span>New mazes every midnight, your time</span><span><a href="mailto:support@thedailymaze.com?subject=The%20Daily%20Maze%20feedback">Contact</a> · © 2026 The Daily Maze</span></footer>
 </div>
   <div class="modal" id="resultModal" hidden role="dialog" aria-modal="true" aria-labelledby="resultTitle">
     <div class="modal-card">
