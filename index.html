@@ -153,7 +153,8 @@ details ul { padding-left: 18px; }
 .howfig figcaption .key { vertical-align: -1px; }
 .key.round { border-radius: 50%; } .key.hollow { background: transparent; box-shadow: inset 0 0 0 2px var(--muted); }
 .howfig svg text { font-family: var(--font-body); }
-.heat { white-space: nowrap; font-size: clamp(10px, calc((100vw - 80px) / 26.5), 15px); }
+.heat-intro { text-wrap: pretty; }
+.heat { white-space: nowrap; font-size: clamp(11px, calc((100vw - 80px) / 19.5), 15px); }
 @media (max-width: 340px) { .heat { white-space: normal; font-size: 12px; } .heat > span { white-space: nowrap; } }
 .heat .key { margin-right: 3px; }
 .nw { white-space: nowrap; }
@@ -309,7 +310,7 @@ details ul { padding-left: 18px; }
     </section>
     <section class="howto" id="howFog" hidden>
       <h2 id="howTitleFog">How to play Fog</h2>
-      <p>Find the hidden flag in the dark. Tiles show how close it is:<br><span class="heat"><span><span class="key" style="background:var(--hot)"></span>hot (1–2 tiles)</span> · <span><span class="key" style="background:var(--neutral)"></span>neutral (3–4 tiles)</span> · <span><span class="key" style="background:var(--cold)"></span>cold (5+ tiles)</span></span></p>
+      <p class="heat-intro">Find the hidden flag in the dark. Each tile shows how many tiles away the flag is:<br><span class="heat"><span><span class="key" style="background:var(--hot)"></span>hot (1–2)</span> · <span><span class="key" style="background:var(--neutral)"></span>neutral (3–4)</span> · <span><span class="key" style="background:var(--cold)"></span>cold (5+)</span></span></p>
       <figure class="howfig">
         <svg viewBox="0 0 160 100" role="img" aria-label="Moving: your explored tiles light up with their heat, and you tap the next tile to step onto it">
           <rect x="5" y="5" width="150" height="90" rx="4" fill="var(--fog)"/>
