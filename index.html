@@ -717,7 +717,7 @@ details ul { padding-left: 18px; }
       for (const d of DIRS) { if (!(open[c] & d.b)) continue; const n = (y + d.dy) * W + x + d.dx; if (toFlag[n] < 0) { toFlag[n] = toFlag[c] + 1; q.push(n); } }
     }
     const par = sol.length - 1;
-    return { W, H, open, start, exit, sol, toFlag, par, hist: [start], visited: new Set([start]), heat: new Map(), deadEnds: [], done: false, won: false };
+    return { W, H, open, start, exit, sol, toFlag, par, hist: [start], visited: new Set([start]), heat: new Map(), deadEnds: [], deadTiles: [], done: false, won: false };
   }
   // Straight-line closeness: warmer if the new cell is nearer the flag than the cell you came from.
   // Heat map: hot within 2 tiles of the flag, neutral within 4, cold beyond (straight line, ignoring walls).
@@ -801,7 +801,7 @@ details ul { padding-left: 18px; }
   }
 
   function applyFogHist(hist) {
-    F.hist = [F.start]; F.visited = new Set([F.start]); F.heat = new Map(); F.deadEnds = []; F.done = false; F.won = false;
+    F.hist = [F.start]; F.visited = new Set([F.start]); F.heat = new Map(); F.deadEnds = []; F.deadTiles = []; F.done = false; F.won = false;
     for (let i = 1; i < hist.length; i++) if (!fogStep(hist[i], true)) break;
   }
   // Lanterns: every dead end you walk into burns one. When the 5th burns out, the fog wins.
@@ -837,6 +837,7 @@ details ul { padding-left: 18px; }
     else if (isNew && n !== F.start && openings(n) === 1) {
       // F.deadEnds is the list of burned lanterns: a short dead end burns one (yellow), a long one burns two (gray).
       if (deadEndDepth(n) === 1) F.deadEnds.push("y"); else F.deadEnds.push("x", "x");
+      F.deadTiles.push({ c: n, cost: deadEndDepth(n) === 1 ? 1 : 2 }); // where the torches went out, for the board
       F.lastBurn = deadEndDepth(n) === 1 ? 1 : 2;
       if (F.deadEnds.length >= LANTERNS) F.done = true; // last lantern out: the fog wins
     }
@@ -1097,6 +1098,22 @@ details ul { padding-left: 18px; }
     G.visited.forEach(c => { for (let d = 0; d < 4; d++) if (!(G.open[c] & DIRS[d].b)) line(wallSeg(c, d, G.W, cs), t.hedge, Math.max(3, cs * 0.1)); });
     if (G.done) polyline(G.sol, g, t.hit, cs * 0.1, [cs * 0.12, cs * 0.12], 0.85);
     polyline(G.hist, g, t.route, cs * 0.14, null, 0.55);
+    // Burnt-out torches: a gray, put-out flame on the last tile of each dead end you walked into,
+    // one for a short dead end and two for a long one.
+    (G.deadTiles || []).forEach(({ c, cost }) => {
+      const fw = cs * 0.2, fh = cs * 0.3, cy = g.cy(c) + fh * 0.5;
+      const xs = cost === 1 ? [g.cx(c)] : [g.cx(c) - fw * 0.6, g.cx(c) + fw * 0.6];
+      xs.forEach(x => {
+        ctx.beginPath();
+        ctx.moveTo(x, cy);
+        ctx.bezierCurveTo(x - fw * 0.75, cy, x - fw * 0.6, cy - fh * 0.55, x - fw * 0.05, cy - fh);
+        ctx.bezierCurveTo(x + fw * 0.15, cy - fh * 0.6, x + fw * 0.75, cy - fh * 0.5, x + fw * 0.55, cy - fh * 0.2);
+        ctx.bezierCurveTo(x + fw * 0.5, cy - fh * 0.05, x + fw * 0.3, cy, x, cy);
+        ctx.closePath();
+        ctx.fillStyle = t.muted; ctx.globalAlpha = 0.85; ctx.fill(); ctx.globalAlpha = 1;
+        ctx.lineWidth = Math.max(1, cs * 0.025); ctx.strokeStyle = t.fog; ctx.stroke();
+      });
+    });
     // The flag stays hidden until you find it or the run ends.
     const pos = G.hist[G.hist.length - 1];
     if (G.won) {
