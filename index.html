@@ -1236,7 +1236,8 @@ details ul { padding-left: 18px; }
       if (P.done) msg = P.won ? "Solved!" : "Out of tries. The hidden trail is dashed.";
       else if (flashMsg) msg = flashMsg;
       else if (P.showLast && P.guesses.length && P.cur.length < 2) {
-        msg = mistakeText(P.guesses[P.guesses.length - 1]);
+        // Hard mode gives no hint: your rows and the board are all you get.
+        msg = P.hard ? "Draw your next try." : mistakeText(P.guesses[P.guesses.length - 1]);
       }
       else if (ready) msg = "Ready to submit.";
       else if (atFlag) msg = (P.cur.length > P.sol.length ? "Too long" : "Too short") + ": the trail is exactly " + P.sol.length + " tiles.";
