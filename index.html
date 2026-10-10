@@ -232,7 +232,7 @@ details ul { padding-left: 18px; }
       <span class="track" aria-hidden="true"></span>
       Hard mode
     </label>
-    <span class="note" id="hardNote">Keep every fork you've gotten green.</span>
+    <span class="note" id="hardNote">No orange tiles, and forks aren't marked on the board.</span>
   </div>
 
   <div class="boardbar" id="boardbar"><span id="barLabel">Trail length</span><b class="len" id="tileCount"></b></div>
@@ -242,8 +242,8 @@ details ul { padding-left: 18px; }
 
   <div class="legend" id="pathLegend">
     <span><span class="key" style="background:var(--hit-soft);outline:1px solid var(--hit)"></span>On the trail</span>
-    <span><span class="key" style="background:var(--wrong-soft);outline:1px solid var(--wrong)"></span>Not on the trail</span>
-    <span><svg class="cairn" viewBox="0 0 20 20" aria-hidden="true"><ellipse cx="10" cy="15" rx="7" ry="3.2"/><ellipse cx="10.3" cy="10" rx="5.2" ry="2.6"/><ellipse cx="9.8" cy="5.6" rx="3.4" ry="2.1"/></svg>Trail marker: where your try went wrong</span>
+    <span id="legOrange"><span class="key" style="background:var(--wrong-soft);outline:1px solid var(--wrong)"></span>Not on the trail</span>
+    <span id="legMarker"><svg class="cairn" viewBox="0 0 20 20" aria-hidden="true"><ellipse cx="10" cy="15" rx="7" ry="3.2"/><ellipse cx="10.3" cy="10" rx="5.2" ry="2.6"/><ellipse cx="9.8" cy="5.6" rx="3.4" ry="2.1"/></svg>Trail marker: where your try went wrong</span>
     <span><span class="key" style="background:var(--hedge)"></span>Wall (invisible until you cross it)</span>
   </div>
 
@@ -314,7 +314,7 @@ details ul { padding-left: 18px; }
         <svg viewBox="0 0 160 134" role="img" aria-label="The same try as above, with the hidden trail shown. The trail has 5 numbered forks. The try goes the right way at fork 1, the wrong way at fork 2, and nothing after that counts: green, amber, empty, empty, empty."><rect x="5" y="5" width="150" height="90" rx="3" fill="var(--panel)" stroke="var(--hedge)" stroke-width="3.5"/><path d="M35 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M65 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M95 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M125 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 35 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 65 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><polyline points="50,20 50,50" fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="2 4" stroke-linecap="round"/><polyline points="110,20 140,20" fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="2 4" stroke-linecap="round"/><polyline points="110,50 140,50" fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="2 4" stroke-linecap="round"/><polyline points="20,20 50,20 80,20 110,20 110,50 110,80 140,80" fill="none" stroke="var(--hit)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" opacity=".35"/><polyline points="20,20 50,20 80,20 80,50 80,80 110,80 140,80" fill="none" stroke="var(--route)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="6.5" fill="var(--route)"/><path d="M136 90 V70" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><path d="M136 70 L149 75 L136 80 Z" fill="var(--hit)"/><circle cx="50" cy="20" r="7.5" fill="var(--hit)" stroke="var(--panel)" stroke-width="1.5"/><text x="50" y="23.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">1</text><circle cx="80" cy="20" r="7.5" fill="var(--partial)" stroke="var(--panel)" stroke-width="1.5"/><text x="80" y="23.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">2</text><circle cx="110" cy="20" r="7.5" fill="var(--panel)" stroke="var(--muted)" stroke-width="2"/><text x="110" y="23.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">3</text><circle cx="110" cy="50" r="7.5" fill="var(--panel)" stroke="var(--muted)" stroke-width="2"/><text x="110" y="53.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">4</text><circle cx="110" cy="80" r="7.5" fill="var(--panel)" stroke="var(--muted)" stroke-width="2"/><text x="110" y="83.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">5</text><circle cx="36" cy="114" r="8" fill="var(--hit)"/><text x="36" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">1</text><circle cx="54" cy="114" r="8" fill="var(--partial)"/><text x="54" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">2</text><circle cx="72" cy="114" r="7.5" fill="none" stroke="var(--muted)" stroke-width="2"/><text x="72" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">3</text><circle cx="90" cy="114" r="7.5" fill="none" stroke="var(--muted)" stroke-width="2"/><text x="90" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">4</text><circle cx="108" cy="114" r="7.5" fill="none" stroke="var(--muted)" stroke-width="2"/><text x="108" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">5</text><g opacity=".5"><path d="M122 122 V106" stroke="var(--muted)" stroke-width="1.8" stroke-linecap="round"/><path d="M122 106 L132 110 L122 114 Z" fill="var(--muted)"/></g></svg>
         <figcaption>Each circle is one fork:<br><span style="white-space:nowrap"><span class="key round" style="background:var(--hit)"></span>right way · <span class="key round" style="background:var(--partial)"></span>wrong way · <span class="key round hollow"></span>not reached</span><br>The flag lights up when you reach it.</figcaption>
       </figure>
-      <p>Hard mode: keep every green fork.</p>
+      <p>Hard mode: no orange tiles, and forks aren't marked on the board. Your rows still show how you did at each fork.</p>
     </section>
     <section class="howto" id="howFog" hidden>
       <h2 id="howTitleFog">How to play Fog</h2>
@@ -756,7 +756,9 @@ details ul { padding-left: 18px; }
     if (!solved && p + 1 < route.length) {
       // Follow your wrong turn: every tile you walk onto off the trail turns orange, until your try runs into a
       // wall (which appears) or ends. Through a wall, you only learn about the wall, not what lies beyond it.
-      for (let i = p; i + 1 < route.length; i++) {
+      // Hard mode shows no orange: only a wall hit right where you went wrong.
+      if (P.hard) { if (!isOpenStep(route[p], route[p + 1])) P.edges.set(edgeKey(route[p], route[p + 1]), "wall"); }
+      else for (let i = p; i + 1 < route.length; i++) {
         const a = route[i], b = route[i + 1], open = isOpenStep(a, b);
         P.edges.set(edgeKey(a, b), open ? "open" : "wall");
         if (!open || P.solSet.has(b)) break;
@@ -906,8 +908,8 @@ details ul { padding-left: 18px; }
     P = buildPath(seed, spec); F = buildFog(seed);
     P.hard = hardPref();
     if (saved && saved.path && Array.isArray(saved.path.guesses)) {
-      applyPathGuesses(saved.path.guesses);
       if (saved.path.guesses.length) P.hard = !!saved.path.hard;
+      applyPathGuesses(saved.path.guesses);
     }
     F.hard = readJSON(FOG_HARD_PREF) === true;
     if (saved && saved.fog && Array.isArray(saved.fog.hist)) {
@@ -933,19 +935,9 @@ details ul { padding-left: 18px; }
     cur.push(c); P.showLast = false; render();
   }
   function hardPref() { return readJSON(HARD_PREF) === true; }
-  // Hard mode, like Wordle's: every fork you've gotten green or yellow must be passed again, choosing the same way.
-  function hardViolation(route) {
-    for (let k = 0; k < P.forks.length; k++) {
-      if (!P.guesses.some(r => { const c = forkRow(r)[k]; return c === "g" || c === "y"; })) continue;
-      const si = P.forks[k], j = route.indexOf(P.sol[si]);
-      if (j < 0 || route[j + 1] !== P.sol[si + 1]) return "Hard mode: keep every fork you've already gotten green.";
-    }
-    return "";
-  }
   function submitPath() {
     if (P.done || P.cur.length < 2 || P.cur[P.cur.length - 1] !== P.exit) return;
     if (P.cur.length !== P.sol.length) { flash("Your trail is " + P.cur.length + " tiles. Today's trail is exactly " + P.sol.length + "."); return; }
-    if (P.hard) { const v = hardViolation(P.cur); if (v) { flash(v); return; } }
     const route = P.cur.slice();
     const res = evalGuess(route);
     P.guesses.push(route);
@@ -1008,7 +1000,7 @@ details ul { padding-left: 18px; }
     ctx.restore();
   }
   function draw() {
-    if (!P) return;
+    if (!P || size < 40) return; // skip while the board is still being laid out
     const t = tokens();
     ctx.clearRect(0, 0, size, size);
     if (mode === "path") drawPath(t); else drawFog(t);
@@ -1049,13 +1041,14 @@ details ul { padding-left: 18px; }
     if (G.sel >= 0 && G.guesses[G.sel]) polyline(G.guesses[G.sel], g, t.muted, cs * 0.12, [cs * 0.12, cs * 0.12], 0.9);
     // Trail marker: a small stack of stones where the newest try (or the tapped row's try) went wrong.
     const focus = G.sel >= 0 ? G.sel : G.guesses.length - 1;
-    if (!G.done && G.guesses[focus] && !isSolved(G.guesses[focus])) {
+    if (!G.done && !G.hard && G.guesses[focus] && !isSolved(G.guesses[focus])) {
       const c = G.guesses[focus][prefixEnd(G.guesses[focus])];
       drawCairn(g.cx(c), g.cy(c) - cs * 0.02, cs, true, t);
     }
     // Numbered fork badges, colored like the result squares, for the newest try (or the tapped row).
     // Forks that try never reached stay hidden until the game is over.
-    if (G.guesses.length) {
+    // Hard mode hides them until the game is over.
+    if (G.guesses.length && (G.done || !G.hard)) {
       const row = forkRow(G.guesses[focus]), col = { g: t.hit, x: t.partial, n: t.panel };
       G.forks.forEach((si, k) => {
         // Only mark forks your try actually walked onto before its first mistake, so the board never
@@ -1221,7 +1214,7 @@ details ul { padding-left: 18px; }
     $("hardToggle").disabled = locked;
     // The explanation only shows while hard mode is on.
     $("hardNote").hidden = !hardOn;
-    $("hardNote").textContent = fogMode ? "Once you enter a corridor, you must follow it to a junction or dead end." : "Keep every fork you've gotten green.";
+    $("hardNote").textContent = fogMode ? "Once you enter a corridor, you must follow it to a junction or dead end." : "No orange tiles, and forks aren't marked on the board.";
     renderStats();
     $("fogControls").hidden = mode !== "fog";
     $("howPath").hidden = mode !== "path";
@@ -1230,6 +1223,7 @@ details ul { padding-left: 18px; }
     $("guesses").hidden = mode !== "path";
     $("rowKey").hidden = mode !== "path";
     $("rowTip").hidden = !P.guesses.length;
+    $("legOrange").hidden = $("legMarker").hidden = P.hard && !P.done;
     $("practiceBtn").textContent = practice ? "Back to today's mazes" : "Play a practice maze";
     $("footNote").textContent = practice ? "Practice mazes are random and are not saved." : "Same mazes for everyone. New ones every day.";
     $("tester").hidden = !practice;
