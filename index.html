@@ -235,7 +235,7 @@ details ul { padding-left: 18px; }
     <span class="note" id="hardNote">Keep every fork you've gotten green.</span>
   </div>
 
-  <div class="boardbar" id="boardbar"><span>Trail length</span><b class="len" id="tileCount"></b></div>
+  <div class="boardbar" id="boardbar"><span id="barLabel">Trail length</span><b class="len" id="tileCount"></b></div>
   <section class="board-wrap">
     <canvas id="board" aria-label="Maze board" tabindex="0"></canvas>
   </section>
@@ -1183,7 +1183,9 @@ details ul { padding-left: 18px; }
     $("tab-path").setAttribute("aria-selected", mode === "path");
     $("tab-fog").setAttribute("aria-selected", mode === "fog");
     $("pathControls").hidden = mode !== "path" || P.done;
-    $("boardbar").hidden = mode !== "path" || P.done; // nothing to draw or submit once the game is over
+    // Above the board: Trail shows your trail's length; Fog shows how many tiles you've explored so far.
+    $("boardbar").hidden = mode === "path" ? P.done : false;
+    $("barLabel").textContent = mode === "path" ? "Trail length" : "Tiles explored";
     $("pathSettings").hidden = false;
     $("pathLegend").hidden = mode !== "path";
     const fogMode = mode === "fog", hardOn = fogMode ? F.hard : P.hard;
@@ -1256,6 +1258,7 @@ details ul { padding-left: 18px; }
       }
     } else {
       const left = Math.max(0, LANTERNS - F.deadEnds.length);
+      $("tileCount").className = "len"; $("tileCount").textContent = String(F.visited.size - 1);
       // Lanterns that went dark since the last redraw flicker out.
       const wasLeft = shownLanterns == null || shownLanterns < left ? left : shownLanterns;
       $("lanterns").setAttribute("aria-label", left + " of " + LANTERNS + " torches left");
