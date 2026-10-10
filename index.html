@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>The Daily Maze</title>
-<meta name="description" content="A new maze puzzle every day. Find the hidden trail in 6 tries, or find the flag in the fog. Free, no sign-up.">
+<meta name="description" content="A new maze puzzle every day. Find the hidden trail in 5 tries, or find the flag in the fog. Free, no sign-up.">
 <link rel="canonical" href="https://www.thedailymaze.com/">
 <meta name="theme-color" content="#24503a">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -14,7 +14,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="The Daily Maze">
 <meta property="og:title" content="The Daily Maze">
-<meta property="og:description" content="A new maze puzzle every day. Find the hidden trail in 6 tries.">
+<meta property="og:description" content="A new maze puzzle every day. Find the hidden trail in 5 tries.">
 <meta property="og:url" content="https://www.thedailymaze.com/">
 <meta property="og:image" content="https://www.thedailymaze.com/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -243,7 +243,7 @@ details ul { padding-left: 18px; }
   <div class="legend" id="pathLegend">
     <span><span class="key" style="background:var(--hit-soft);outline:1px solid var(--hit)"></span>On the trail</span>
     <span><span class="key" style="background:var(--wrong-soft);outline:1px solid var(--wrong)"></span>Not on the trail</span>
-    <span><svg class="cairn" viewBox="0 0 20 20" aria-hidden="true"><ellipse cx="10" cy="15" rx="7" ry="3.2"/><ellipse cx="10.3" cy="10" rx="5.2" ry="2.6"/><ellipse cx="9.8" cy="5.6" rx="3.4" ry="2.1"/></svg>Trail marker: where a try went wrong</span>
+    <span><svg class="cairn" viewBox="0 0 20 20" aria-hidden="true"><ellipse cx="10" cy="15" rx="7" ry="3.2"/><ellipse cx="10.3" cy="10" rx="5.2" ry="2.6"/><ellipse cx="9.8" cy="5.6" rx="3.4" ry="2.1"/></svg>Trail marker: the next fork on the trail</span>
     <span><span class="key" style="background:var(--hedge)"></span>Wall (invisible until you cross it)</span>
   </div>
 
@@ -299,16 +299,16 @@ details ul { padding-left: 18px; }
       <button class="modal-x" id="howClose" aria-label="Close">×</button>
     <section class="howto" id="howPath">
       <h2 id="howTitlePath">How to play Trail</h2>
-      <p>Find the hidden trail from the blue dot to the flag in 6 tries. The trail has 5 forks, and you know exactly how long it is.</p>
+      <p>Find the hidden trail from the blue dot to the flag in 5 tries. The trail has 5 forks, and you know exactly how long it is.</p>
       <figure class="howfig">
-        <svg viewBox="0 0 160 100" role="img" aria-label="Drawing a trail from the blue dot to the flag across a maze whose walls are invisible">
-          <rect x="5" y="5" width="150" height="90" rx="3" fill="var(--panel)" stroke="var(--hedge)" stroke-width="3.5"/><path d="M35 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M65 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M95 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M125 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 35 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 65 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><polyline points="20,20 50,20 80,20 80,50 80,80 110,80 140,80" fill="none" stroke="var(--route)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".9" /><circle cx="20" cy="20" r="7" fill="var(--route)"/><path d="M136 90 V70" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><path d="M136 70 L149 75 L136 80 Z" fill="var(--hit)"/>
+        <svg viewBox="0 0 160 100" role="img" aria-label="Drawing a trail from the blue dot to the flag through a stone on the first fork, across a maze whose walls are invisible">
+          <rect x="5" y="5" width="150" height="90" rx="3" fill="var(--panel)" stroke="var(--hedge)" stroke-width="3.5"/><path d="M35 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M65 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M95 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M125 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 35 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 65 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><polyline points="20,20 50,20 80,20 80,50 80,80 110,80 140,80" fill="none" stroke="var(--route)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".9" /><g transform="translate(41 8)"><ellipse cx="9" cy="16" rx="7" ry="3.1" fill="var(--ink)" stroke="var(--panel)"/><ellipse cx="9.3" cy="11" rx="5.1" ry="2.6" fill="var(--ink)" stroke="var(--panel)"/><ellipse cx="8.8" cy="6.6" rx="3.3" ry="2" fill="var(--ink)" stroke="var(--panel)"/></g><circle cx="20" cy="20" r="7" fill="var(--route)"/><path d="M136 90 V70" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><path d="M136 70 L149 75 L136 80 Z" fill="var(--hit)"/>
         </svg>
-        <figcaption>Draw a trail that matches the length shown, like <b class="len ok">7 / 7 tiles</b>. <b>Walls are invisible</b>, so any dashed line could be one.</figcaption>
+        <figcaption>Draw a trail that matches the length shown, like <b class="len ok">7 / 7 tiles</b>. A stone marks the trail's first fork. <b>Walls are invisible</b>, so any dashed line could be one.</figcaption>
       </figure>
       <figure class="howfig">
-        <svg viewBox="0 0 160 100" role="img" aria-label="After a try: green tiles up to where it went wrong, a stone on the last right tile, orange tiles where it left the trail, and the wall it hit"><rect x="5" y="5" width="150" height="90" rx="3" fill="var(--panel)" stroke="var(--hedge)" stroke-width="3.5"/><rect x="5" y="5" width="30" height="30" fill="var(--hit-soft)"/><rect x="35" y="5" width="30" height="30" fill="var(--hit-soft)"/><rect x="65" y="5" width="30" height="30" fill="var(--hit-soft)"/><rect x="65" y="35" width="30" height="30" fill="var(--wrong-soft)"/><rect x="65" y="65" width="30" height="30" fill="var(--wrong-soft)"/><path d="M35 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M65 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M95 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M125 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 35 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 65 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><polyline points="20,20 50,20 80,20 80,50 80,80 110,80 140,80" fill="none" stroke="var(--route)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".45"/><path d="M95 65 V95" stroke="var(--panel)" stroke-width="7.5" stroke-linecap="round"/><path d="M95 65 V95" stroke="var(--hedge)" stroke-width="4" stroke-linecap="round"/><g transform="translate(71 8)"><ellipse cx="9" cy="16" rx="7" ry="3.1" fill="var(--ink)" stroke="var(--panel)"/><ellipse cx="9.3" cy="11" rx="5.1" ry="2.6" fill="var(--ink)" stroke="var(--panel)"/><ellipse cx="8.8" cy="6.6" rx="3.3" ry="2" fill="var(--ink)" stroke="var(--panel)"/></g><circle cx="20" cy="20" r="7" fill="var(--route)"/><path d="M136 90 V70" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><path d="M136 70 L149 75 L136 80 Z" fill="var(--hit)"/></svg>
-        <figcaption>After each try, <span class="key" style="background:var(--hit)"></span>green shows how far you got and a stone marks where you went wrong. <span class="key" style="background:var(--wrong)"></span>Tiles off the trail turn orange, and any wall you hit appears. Nothing past a wall is shown.</figcaption>
+        <svg viewBox="0 0 160 100" role="img" aria-label="After a try: green tiles up to where it went wrong, the stone on the fork it got wrong, orange tiles where it left the trail, and the wall it hit"><rect x="5" y="5" width="150" height="90" rx="3" fill="var(--panel)" stroke="var(--hedge)" stroke-width="3.5"/><rect x="5" y="5" width="30" height="30" fill="var(--hit-soft)"/><rect x="35" y="5" width="30" height="30" fill="var(--hit-soft)"/><rect x="65" y="5" width="30" height="30" fill="var(--hit-soft)"/><rect x="65" y="35" width="30" height="30" fill="var(--wrong-soft)"/><rect x="65" y="65" width="30" height="30" fill="var(--wrong-soft)"/><path d="M35 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M65 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M95 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M125 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 35 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 65 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><polyline points="20,20 50,20 80,20 80,50 80,80 110,80 140,80" fill="none" stroke="var(--route)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".45"/><path d="M95 65 V95" stroke="var(--panel)" stroke-width="7.5" stroke-linecap="round"/><path d="M95 65 V95" stroke="var(--hedge)" stroke-width="4" stroke-linecap="round"/><g transform="translate(71 8)"><ellipse cx="9" cy="16" rx="7" ry="3.1" fill="var(--ink)" stroke="var(--panel)"/><ellipse cx="9.3" cy="11" rx="5.1" ry="2.6" fill="var(--ink)" stroke="var(--panel)"/><ellipse cx="8.8" cy="6.6" rx="3.3" ry="2" fill="var(--ink)" stroke="var(--panel)"/></g><circle cx="20" cy="20" r="7" fill="var(--route)"/><path d="M136 90 V70" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><path d="M136 70 L149 75 L136 80 Z" fill="var(--hit)"/></svg>
+        <figcaption>After each try, <span class="key" style="background:var(--hit)"></span>green shows how far you got. The stone moves to the first fork you haven't got past. <span class="key" style="background:var(--wrong)"></span>Tiles off the trail turn orange, and any wall you hit appears. Nothing past a wall is shown.</figcaption>
       </figure>
       <figure class="howfig">
         <svg viewBox="0 0 160 134" role="img" aria-label="The same try as above, with the hidden trail shown. The trail has 5 numbered forks. The try goes the right way at fork 1, the wrong way at fork 2, and nothing after that counts: green, amber, empty, empty, empty."><rect x="5" y="5" width="150" height="90" rx="3" fill="var(--panel)" stroke="var(--hedge)" stroke-width="3.5"/><path d="M35 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M65 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M95 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M125 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 35 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 65 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><polyline points="50,20 50,50" fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="2 4" stroke-linecap="round"/><polyline points="110,20 140,20" fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="2 4" stroke-linecap="round"/><polyline points="110,50 140,50" fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="2 4" stroke-linecap="round"/><polyline points="20,20 50,20 80,20 110,20 110,50 110,80 140,80" fill="none" stroke="var(--hit)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" opacity=".35"/><polyline points="20,20 50,20 80,20 80,50 80,80 110,80 140,80" fill="none" stroke="var(--route)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="6.5" fill="var(--route)"/><path d="M136 90 V70" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><path d="M136 70 L149 75 L136 80 Z" fill="var(--hit)"/><circle cx="50" cy="20" r="7.5" fill="var(--hit)" stroke="var(--panel)" stroke-width="1.5"/><text x="50" y="23.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">1</text><circle cx="80" cy="20" r="7.5" fill="var(--partial)" stroke="var(--panel)" stroke-width="1.5"/><text x="80" y="23.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">2</text><circle cx="110" cy="20" r="7.5" fill="var(--panel)" stroke="var(--muted)" stroke-width="2"/><text x="110" y="23.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">3</text><circle cx="110" cy="50" r="7.5" fill="var(--panel)" stroke="var(--muted)" stroke-width="2"/><text x="110" y="53.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">4</text><circle cx="110" cy="80" r="7.5" fill="var(--panel)" stroke="var(--muted)" stroke-width="2"/><text x="110" y="83.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">5</text><circle cx="36" cy="114" r="8" fill="var(--hit)"/><text x="36" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">1</text><circle cx="54" cy="114" r="8" fill="var(--partial)"/><text x="54" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">2</text><circle cx="72" cy="114" r="7.5" fill="none" stroke="var(--muted)" stroke-width="2"/><text x="72" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">3</text><circle cx="90" cy="114" r="7.5" fill="none" stroke="var(--muted)" stroke-width="2"/><text x="90" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">4</text><circle cx="108" cy="114" r="7.5" fill="none" stroke="var(--muted)" stroke-width="2"/><text x="108" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">5</text><g opacity=".5"><path d="M122 122 V106" stroke="var(--muted)" stroke-width="1.8" stroke-linecap="round"/><path d="M122 106 L132 110 L122 114 Z" fill="var(--muted)"/></g></svg>
@@ -447,7 +447,7 @@ details ul { padding-left: 18px; }
   const puzzleNo = Math.max(1, Math.floor((Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(2026, 9, 9)) / 864e5) + 1); // launch day, Oct 9 2026, is #1
   const dateLabel = now.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
   // Path v5: routes are 6 straight lines. Older Path saves no longer match the rules.
-  const STORE = "mazedle-path31-" + dateKey;
+  const STORE = "mazedle-path32-" + dateKey;
   const FOG_STORE = "mazedle-fog13-" + dateKey;
   const STATS_STORE = "mazedle-stats2";
   const HARD_PREF = "mazedle-hard";
@@ -473,7 +473,7 @@ details ul { padding-left: 18px; }
   // Path: g = tries used. Fog: g = lanterns remaining.
   function recordResult() { if (!practice && P.done) saveResult(STATS_STORE, { won: P.won, g: P.won ? P.guesses.length : 0, hard: P.hard }); }
   function recordFogResult() { if (!practice && F.done) saveResult(FOG_STATS, { won: F.won, g: F.won ? Math.max(0, 5 - F.deadEnds.length) : 0 }); }
-  // buckets: the values shown as bars, in display order (Trail: 1..6 tries; Fog: 5..1 lanterns remaining)
+  // buckets: the values shown as bars, in display order (Trail: 1..5 tries; Fog: 5..1 lanterns remaining)
   function computeStats(store, buckets) {
     const h = (readJSON(store) || { history: {} }).history;
     const keys = Object.keys(h).sort();
@@ -494,7 +494,7 @@ details ul { padding-left: 18px; }
   }
 
   // ---------- game state ----------
-  const MAX_GUESSES = 6;
+  const MAX_GUESSES = 5;
   let practice = false, mode = "fog"; // Fog is shown first
   let P, F;
 
@@ -566,7 +566,7 @@ details ul { padding-left: 18px; }
     }
     return open;
   }
-  // A fork is any spot on the trail (including the start, but not the flag) where an opening leads off the trail,
+  // A fork is any spot on the trail (the start counts, but daily trails never fork there; the flag doesn't) where an opening leads off the trail,
   // even a one-tile nub, so every place the player could go another way counts.
   function findForks(open, sol, W, H) {
     const solSet = new Set(sol), idx = [];
@@ -666,9 +666,9 @@ details ul { padding-left: 18px; }
       const sol = bfs(open, W, H, start, exit), solSet = new Set(sol);
       const m = { W, H, open, start, exit, sol, solSet, forks: findForks(open, sol, W, H) };
       // Every daily trail has exactly 5 forks, no short wrong ways, and at least one 3-way fork.
-      if (m.forks.length !== FORKS || minBranch(open, sol, W) < MIN_BRANCH) continue;
+      if (m.forks.length !== FORKS || m.forks[0] === 0 || minBranch(open, sol, W) < MIN_BRANCH) continue;
       for (let k = 0; k < 3 && threeWayForks(m) < THREE_WAY; k++) if (!addThreeWay(m, rng)) break;
-      if (threeWayForks(m) < THREE_WAY) continue;
+      if (threeWayForks(m) < THREE_WAY || m.forks[0] === 0) continue;
       m.dist = distanceToPath(m.open, W, H, solSet); m.score = scoreMaze(m); all.push(m);
     }
     // Try another batch in the rare case none qualify.
@@ -740,6 +740,10 @@ details ul { padding-left: 18px; }
       if (si > p) return "n";
       return si === p ? "x" : "g";
     });
+  }
+  // The next fork no try has got past yet (index into P.forks): the trail marker sits there.
+  function nextFork() {
+    return P.guesses.reduce((best, r) => { const row = forkRow(r); let k = 0; while (k < row.length && row[k] === "g") k++; return Math.max(best, k); }, 0);
   }
   // Solved means your route is exactly the hidden path.
   const isSolved = route => route.length === P.sol.length && route.every((c, i) => c === P.sol[i]);
@@ -1049,10 +1053,11 @@ details ul { padding-left: 18px; }
     if (G.done && !G.won) polyline(G.sol, g, t.hit, cs * 0.12, [cs * 0.15, cs * 0.15], 0.9);
     // Tapping a played row shows that route as a dashed line.
     if (G.sel >= 0 && G.guesses[G.sel]) polyline(G.guesses[G.sel], g, t.muted, cs * 0.12, [cs * 0.12, cs * 0.12], 0.9);
-    // Trail marker: a small stack of stones where the newest try (or the tapped row's try) went wrong.
-    const focus = G.sel >= 0 ? G.sel : G.guesses.length - 1;
-    if (!G.done && G.guesses[focus] && !isSolved(G.guesses[focus])) {
-      const c = G.guesses[focus][prefixEnd(G.guesses[focus])];
+    // Trail marker: a small stack of stones on the next fork you haven't got past yet. It starts on fork 1
+    // and moves on only once a try goes the right way at that fork.
+    const focus = G.sel >= 0 ? G.sel : G.guesses.length - 1, nf = nextFork();
+    if (!G.done && nf < G.forks.length) {
+      const c = G.sol[G.forks[nf]];
       drawCairn(g.cx(c), g.cy(c) - cs * 0.02, cs, true, t);
     }
     // Numbered fork badges, colored like the result squares, for the newest try (or the tapped row).
@@ -1246,13 +1251,13 @@ details ul { padding-left: 18px; }
         const last = guessSummary(P.guesses[P.guesses.length - 1]);
         msg = last.row.every(x => x === "g")
           ? "Every choice was right, but your trail left the hidden trail between forks. Follow it exactly."
-          : "The trail marker shows where you went wrong. Keep the green tiles and try a different way there.";
+          : "Keep the green tiles. The trail marker shows the next fork to get past.";
         // For the first two tries, spell out what the row of circles means for this try.
         if (P.guesses.length <= 2) msg = describeRow(last.row) + " " + msg;
       }
       else if (ready) msg = "Ready to submit.";
       else if (atFlag) msg = (P.cur.length > P.sol.length ? "Too long" : "Too short") + ": the trail is exactly " + P.sol.length + " tiles.";
-      else if (P.cur.length < 2) msg = "Draw a trail from the blue dot to the flag.";
+      else if (P.cur.length < 2) msg = "Draw a trail from the blue dot to the flag, through the trail marker.";
       else if (P.cur.length > P.sol.length) msg = "Too long: the trail is exactly " + P.sol.length + " tiles.";
       else msg = "Keep going to the flag.";
       const lenTag = P.done ? "" : "<b class=\"len" + (P.cur.length > P.sol.length || (atFlag && !ready) ? " over" : ready ? " ok" : "") + "\">" + P.cur.length + " / " + P.sol.length + " tiles</b> ";
@@ -1267,7 +1272,7 @@ details ul { padding-left: 18px; }
       $("undoBtn").disabled = P.done || P.cur.length < 2;
       $("clearBtn").disabled = P.done || P.cur.length < 2;
       const ol = $("guesses"); ol.innerHTML = "";
-      // Wordle-style grid: 6 rows of 6. Played rows show colors; the current row fills in as you draw lines.
+      // Wordle-style grid: one row per try. Played rows show colors; the current row fills in as you draw lines.
       for (let idx = 0; idx < MAX_GUESSES; idx++) {
         const li = document.createElement("li");
         let cells;
