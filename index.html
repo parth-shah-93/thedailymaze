@@ -1101,17 +1101,29 @@ details ul { padding-left: 18px; }
     // Burnt-out torches: a gray, put-out flame on the last tile of each dead end you walked into,
     // one for a short dead end and two for a long one.
     (G.deadTiles || []).forEach(({ c, cost }) => {
-      const fw = cs * 0.2, fh = cs * 0.3, cy = g.cy(c) + fh * 0.5;
-      const xs = cost === 1 ? [g.cx(c)] : [g.cx(c) - fw * 0.6, g.cx(c) + fw * 0.6];
+      // A put-out torch: a gray flame with a curled tip, side tongue and hollow core.
+      const s = cs * 0.3, by = g.cy(c) + s * 0.7;
+      const xs = cost === 1 ? [g.cx(c)] : [g.cx(c) - s * 0.42, g.cx(c) + s * 0.42];
       xs.forEach(x => {
+        ctx.save(); ctx.translate(x, by); ctx.scale(s, s);
         ctx.beginPath();
-        ctx.moveTo(x, cy);
-        ctx.bezierCurveTo(x - fw * 0.75, cy, x - fw * 0.6, cy - fh * 0.55, x - fw * 0.05, cy - fh);
-        ctx.bezierCurveTo(x + fw * 0.15, cy - fh * 0.6, x + fw * 0.75, cy - fh * 0.5, x + fw * 0.55, cy - fh * 0.2);
-        ctx.bezierCurveTo(x + fw * 0.5, cy - fh * 0.05, x + fw * 0.3, cy, x, cy);
+        ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(-0.32, 0, -0.5, -0.22, -0.5, -0.48);
+        ctx.bezierCurveTo(-0.5, -0.72, -0.34, -0.86, -0.3, -1.02);
+        ctx.bezierCurveTo(-0.2, -0.92, -0.13, -0.86, -0.08, -0.8);
+        ctx.bezierCurveTo(-0.06, -1.05, 0.08, -1.25, 0.2, -1.4);
+        ctx.bezierCurveTo(0.32, -1.15, 0.5, -0.85, 0.5, -0.48);
+        ctx.bezierCurveTo(0.5, -0.22, 0.32, 0, 0, 0);
         ctx.closePath();
-        ctx.fillStyle = t.muted; ctx.globalAlpha = 0.85; ctx.fill(); ctx.globalAlpha = 1;
-        ctx.lineWidth = Math.max(1, cs * 0.025); ctx.strokeStyle = t.fog; ctx.stroke();
+        ctx.moveTo(0, -0.1);
+        ctx.bezierCurveTo(0.12, -0.1, 0.2, -0.18, 0.2, -0.32);
+        ctx.bezierCurveTo(0.2, -0.48, 0.1, -0.58, 0.02, -0.7);
+        ctx.bezierCurveTo(-0.06, -0.58, -0.2, -0.5, -0.2, -0.32);
+        ctx.bezierCurveTo(-0.2, -0.18, -0.12, -0.1, 0, -0.1);
+        ctx.closePath();
+        ctx.fillStyle = t.muted; ctx.fill("evenodd");
+        ctx.lineJoin = "round"; ctx.lineWidth = Math.max(1, cs * 0.02) / s; ctx.strokeStyle = t.fog; ctx.stroke();
+        ctx.restore();
       });
     });
     // The flag stays hidden until you find it or the run ends.
