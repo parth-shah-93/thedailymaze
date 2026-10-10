@@ -138,6 +138,7 @@ details { background: var(--panel); border-radius: 10px; padding: 10px 14px; }
 summary { cursor: pointer; font-weight: 600; }
 details p, details ul { margin: 8px 0 0; color: var(--ink); }
 details ul { padding-left: 18px; }
+.cairn { width: 16px; height: 16px; margin-right: 4px; fill: var(--ink); stroke: var(--panel); stroke-width: 1; }
 .key { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; }
 .foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
 .sitefoot { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 14px; text-align: center; font-size: 12px; color: var(--muted); padding-top: 12px; border-top: 1px solid var(--grid); }
@@ -242,6 +243,7 @@ details ul { padding-left: 18px; }
   <div class="legend" id="pathLegend">
     <span><span class="key" style="background:var(--hit-soft);outline:1px solid var(--hit)"></span>On the trail</span>
     <span><span class="key" style="background:var(--wrong-soft);outline:1px solid var(--wrong)"></span>Not on the trail</span>
+    <span><svg class="cairn" viewBox="0 0 20 20" aria-hidden="true"><ellipse cx="10" cy="15" rx="7" ry="3.2"/><ellipse cx="10.3" cy="10" rx="5.2" ry="2.6"/><ellipse cx="9.8" cy="5.6" rx="3.4" ry="2.1"/></svg>Trail marker: where your try went wrong</span>
     <span><span class="key" style="background:var(--hedge)"></span>Wall (invisible until you cross it)</span>
   </div>
 
@@ -305,8 +307,8 @@ details ul { padding-left: 18px; }
         <figcaption>Draw a trail that matches the length shown, like <b class="len ok">7 / 7 tiles</b>. <b>Walls are invisible</b>, so any dashed line could be one.</figcaption>
       </figure>
       <figure class="howfig">
-        <svg viewBox="0 0 160 100" role="img" aria-label="After a try: green tiles up to the fork where it went the wrong way, orange tiles where it went, and the wall it hit"><rect x="5" y="5" width="150" height="90" rx="3" fill="var(--panel)" stroke="var(--hedge)" stroke-width="3.5"/><rect x="5" y="5" width="30" height="30" fill="var(--hit-soft)"/><rect x="35" y="5" width="30" height="30" fill="var(--hit-soft)"/><rect x="65" y="5" width="30" height="30" fill="var(--hit-soft)"/><rect x="65" y="35" width="30" height="30" fill="var(--wrong-soft)"/><rect x="65" y="65" width="30" height="30" fill="var(--wrong-soft)"/><path d="M35 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M65 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M95 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M125 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 35 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 65 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><polyline points="20,20 50,20 80,20 80,50 80,80 110,80 140,80" fill="none" stroke="var(--route)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".45"/><path d="M95 65 V95" stroke="var(--panel)" stroke-width="7.5" stroke-linecap="round"/><path d="M95 65 V95" stroke="var(--hedge)" stroke-width="4" stroke-linecap="round"/><circle cx="20" cy="20" r="7" fill="var(--route)"/><path d="M136 90 V70" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><path d="M136 70 L149 75 L136 80 Z" fill="var(--hit)"/></svg>
-        <figcaption>After each try, <span class="key" style="background:var(--hit)"></span>green shows how far you got. A try stops at its first mistake: the <b>wrong way at a fork</b>, where <span class="key" style="background:var(--wrong)"></span>orange shows where you went until you hit a wall, or a <b>wall between forks</b>.</figcaption>
+        <svg viewBox="0 0 160 100" role="img" aria-label="After a try: green tiles up to the fork where it went the wrong way, a stone on that fork, orange tiles where it went, and the wall it hit"><rect x="5" y="5" width="150" height="90" rx="3" fill="var(--panel)" stroke="var(--hedge)" stroke-width="3.5"/><rect x="5" y="5" width="30" height="30" fill="var(--hit-soft)"/><rect x="35" y="5" width="30" height="30" fill="var(--hit-soft)"/><rect x="65" y="5" width="30" height="30" fill="var(--hit-soft)"/><rect x="65" y="35" width="30" height="30" fill="var(--wrong-soft)"/><rect x="65" y="65" width="30" height="30" fill="var(--wrong-soft)"/><path d="M35 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M65 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M95 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M125 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 35 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 65 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><polyline points="20,20 50,20 80,20 80,50 80,80 110,80 140,80" fill="none" stroke="var(--route)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".45"/><path d="M95 65 V95" stroke="var(--panel)" stroke-width="7.5" stroke-linecap="round"/><path d="M95 65 V95" stroke="var(--hedge)" stroke-width="4" stroke-linecap="round"/><g transform="translate(71 8)"><ellipse cx="9" cy="16" rx="7" ry="3.1" fill="var(--ink)" stroke="var(--panel)"/><ellipse cx="9.3" cy="11" rx="5.1" ry="2.6" fill="var(--ink)" stroke="var(--panel)"/><ellipse cx="8.8" cy="6.6" rx="3.3" ry="2" fill="var(--ink)" stroke="var(--panel)"/></g><circle cx="20" cy="20" r="7" fill="var(--route)"/><path d="M136 90 V70" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><path d="M136 70 L149 75 L136 80 Z" fill="var(--hit)"/></svg>
+        <figcaption>After each try, <span class="key" style="background:var(--hit)"></span>green shows how far you got and a stone marks where you went wrong. A try stops at its first mistake: the <b>wrong way at a fork</b>, where <span class="key" style="background:var(--wrong)"></span>orange shows where you went until you hit a wall, or a <b>wall between forks</b>.</figcaption>
       </figure>
       <figure class="howfig">
         <svg viewBox="0 0 160 134" role="img" aria-label="The same try as above, with the hidden trail shown. The trail has 5 numbered forks. The try goes the right way at fork 1, the wrong way at fork 2, and nothing after that counts: green, amber, empty, empty, empty."><rect x="5" y="5" width="150" height="90" rx="3" fill="var(--panel)" stroke="var(--hedge)" stroke-width="3.5"/><path d="M35 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M65 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M95 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M125 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 35 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 65 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><polyline points="50,20 50,50" fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="2 4" stroke-linecap="round"/><polyline points="110,20 140,20" fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="2 4" stroke-linecap="round"/><polyline points="110,50 140,50" fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="2 4" stroke-linecap="round"/><polyline points="20,20 50,20 80,20 110,20 110,50 110,80 140,80" fill="none" stroke="var(--hit)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" opacity=".35"/><polyline points="20,20 50,20 80,20 80,50 80,80 110,80 140,80" fill="none" stroke="var(--route)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="6.5" fill="var(--route)"/><path d="M136 90 V70" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><path d="M136 70 L149 75 L136 80 Z" fill="var(--hit)"/><circle cx="50" cy="20" r="7.5" fill="var(--hit)" stroke="var(--panel)" stroke-width="1.5"/><text x="50" y="23.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">1</text><circle cx="80" cy="20" r="7.5" fill="var(--partial)" stroke="var(--panel)" stroke-width="1.5"/><text x="80" y="23.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">2</text><circle cx="110" cy="20" r="7.5" fill="var(--panel)" stroke="var(--muted)" stroke-width="2"/><text x="110" y="23.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">3</text><circle cx="110" cy="50" r="7.5" fill="var(--panel)" stroke="var(--muted)" stroke-width="2"/><text x="110" y="53.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">4</text><circle cx="110" cy="80" r="7.5" fill="var(--panel)" stroke="var(--muted)" stroke-width="2"/><text x="110" y="83.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">5</text><circle cx="36" cy="114" r="8" fill="var(--hit)"/><text x="36" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">1</text><circle cx="54" cy="114" r="8" fill="var(--partial)"/><text x="54" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">2</text><circle cx="72" cy="114" r="7.5" fill="none" stroke="var(--muted)" stroke-width="2"/><text x="72" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">3</text><circle cx="90" cy="114" r="7.5" fill="none" stroke="var(--muted)" stroke-width="2"/><text x="90" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">4</text><circle cx="108" cy="114" r="7.5" fill="none" stroke="var(--muted)" stroke-width="2"/><text x="108" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">5</text><g opacity=".5"><path d="M122 122 V106" stroke="var(--muted)" stroke-width="1.8" stroke-linecap="round"/><path d="M122 106 L132 110 L122 114 Z" fill="var(--muted)"/></g></svg>
@@ -1011,6 +1013,17 @@ details ul { padding-left: 18px; }
     ctx.clearRect(0, 0, size, size);
     if (mode === "path") drawPath(t); else drawFog(t);
   }
+  // A trail marker: three stacked stones.
+  function drawCairn(x, y, cs, bold, t) {
+    const stones = [[0, 0.17, 0.2, 0.09], [0.01, 0.02, 0.15, 0.075], [-0.01, -0.11, 0.1, 0.06]];
+    ctx.save(); ctx.globalAlpha = bold ? 1 : 0.45; ctx.setLineDash([]);
+    stones.forEach(([dx, dy, rx, ry]) => {
+      ctx.beginPath(); ctx.ellipse(x + dx * cs, y + dy * cs, rx * cs, ry * cs, 0, 0, Math.PI * 2);
+      ctx.fillStyle = bold ? t.ink : t.muted; ctx.fill();
+      ctx.lineWidth = Math.max(1.5, cs * 0.03); ctx.strokeStyle = t.panel; ctx.stroke();
+    });
+    ctx.restore();
+  }
   function drawPath(t) {
     const G = P, g = geom(G.W), cs = g.cs, N = G.W * G.H;
     ctx.fillStyle = t.panel; ctx.fillRect(0, 0, size, size);
@@ -1034,7 +1047,12 @@ details ul { padding-left: 18px; }
     if (G.done && !G.won) polyline(G.sol, g, t.hit, cs * 0.12, [cs * 0.15, cs * 0.15], 0.9);
     // Tapping a played row shows that route as a dashed line.
     if (G.sel >= 0 && G.guesses[G.sel]) polyline(G.guesses[G.sel], g, t.muted, cs * 0.12, [cs * 0.12, cs * 0.12], 0.9);
+    // Trail marker: a small stack of stones where the newest try (or the tapped row's try) went wrong.
     const focus = G.sel >= 0 ? G.sel : G.guesses.length - 1;
+    if (!G.done && G.guesses[focus] && !isSolved(G.guesses[focus])) {
+      const c = G.guesses[focus][prefixEnd(G.guesses[focus])];
+      drawCairn(g.cx(c), g.cy(c) - cs * 0.02, cs, true, t);
+    }
     // Numbered fork badges, colored like the result squares, for the newest try (or the tapped row).
     // Forks that try never reached stay hidden until the game is over.
     if (G.guesses.length) {
