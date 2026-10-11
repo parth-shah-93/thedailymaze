@@ -154,7 +154,7 @@ details ul { padding-left: 18px; }
 .modal-card h2 { font-family: var(--font-display); font-size: 20px; font-weight: 500; margin: 0 28px 2px 0; color: var(--hedge); }
 .howto p, .howto ul { margin: 0; } .howto { display: flex; flex-direction: column; gap: 10px; } .howto ul { padding-left: 18px; }
 .howfig { margin: 0; display: flex; flex-direction: column; gap: 6px; }
-.howfig svg { display: block; width: 100%; max-width: 280px; height: auto; margin: 0 auto; }
+.howfig svg { display: block; width: 100%; max-width: 230px; height: auto; margin: 0 auto; }
 .howfig figcaption { font-size: 13px; color: var(--muted); text-align: center; text-wrap: balance; }
 .howfig figcaption .key { vertical-align: -1px; }
 .key.round { border-radius: 50%; } .key.hollow { background: transparent; box-shadow: inset 0 0 0 2px var(--muted); }
@@ -165,7 +165,7 @@ details ul { padding-left: 18px; }
 .heat .key { margin-right: 3px; }
 .nw { white-space: nowrap; }
 .howfig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.howfig-row svg { max-width: 140px; }
+.howfig-row svg { max-width: 120px; }
 .modal-x { position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 50%; border: 0; background: transparent; color: var(--muted); font-size: 24px; line-height: 1; cursor: pointer; }
 .modal-x:hover { color: var(--ink); }
 .share { margin: 0; font-family: var(--font-data); font-size: 14px; white-space: pre-wrap; background: var(--bg); padding: 12px; border-radius: 8px; overflow-x: auto; }
@@ -306,26 +306,26 @@ details ul { padding-left: 18px; }
       <button class="modal-x" id="howClose" aria-label="Close">×</button>
     <section class="howto" id="howPath">
       <h2 id="howTitlePath">How to play Trail</h2>
-      <p>Find the hidden trail from the blue dot to the flag in 6 tries. Along the way are 5 forks, spots where you have to pick the right way.</p>
+      <p>Find the hidden trail to the flag in 6 tries. It passes 5 forks where you must pick the right way.</p>
       <figure class="howfig">
         <svg viewBox="0 0 160 100" role="img" aria-label="Drawing a trail from the blue dot to the flag across a maze whose walls are invisible">
           <rect x="5" y="5" width="150" height="90" rx="3" fill="var(--panel)" stroke="var(--hedge)" stroke-width="3.5"/><path d="M35 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M65 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M95 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M125 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 35 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 65 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><polyline points="20,20 50,20 80,20 80,50 80,80 110,80 140,80" fill="none" stroke="var(--route)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".9" /><circle cx="20" cy="20" r="7" fill="var(--route)"/><path d="M136 90 V70" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><path d="M136 70 L149 75 L136 80 Z" fill="var(--hit)"/>
         </svg>
-        <figcaption>The trail is a different length every day. Your trail must match the counter above the board, like <b class="len ok">7 / 7 tiles</b> in this example. <b>Walls are invisible</b>: any dashed line could be one.</figcaption>
+        <figcaption>The length changes daily. Match the counter, like <b class="len ok">7 / 7 tiles</b> here. <b>Walls are invisible.</b></figcaption>
       </figure>
       <figure class="howfig">
         <svg viewBox="0 0 160 100" role="img" aria-label="After a try: green tiles up to the fork where it went the wrong way, a stone on that fork, orange tiles where it went, and the wall it hit"><rect x="5" y="5" width="150" height="90" rx="3" fill="var(--panel)" stroke="var(--hedge)" stroke-width="3.5"/><rect x="5" y="5" width="30" height="30" fill="var(--hit-soft)"/><rect x="35" y="5" width="30" height="30" fill="var(--hit-soft)"/><rect x="65" y="5" width="30" height="30" fill="var(--hit-soft)"/><rect x="65" y="35" width="30" height="30" fill="var(--wrong-soft)"/><rect x="65" y="65" width="30" height="30" fill="var(--wrong-soft)"/><path d="M35 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M65 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M95 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M125 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 35 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 65 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><polyline points="20,20 50,20 80,20 80,50 80,80 110,80 140,80" fill="none" stroke="var(--route)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".45"/><path d="M95 65 V95" stroke="var(--panel)" stroke-width="7.5" stroke-linecap="round"/><path d="M95 65 V95" stroke="var(--hedge)" stroke-width="4" stroke-linecap="round"/><g transform="translate(71 8)"><ellipse cx="9" cy="16" rx="7" ry="3.1" fill="var(--ink)" stroke="var(--panel)"/><ellipse cx="9.3" cy="11" rx="5.1" ry="2.6" fill="var(--ink)" stroke="var(--panel)"/><ellipse cx="8.8" cy="6.6" rx="3.3" ry="2" fill="var(--ink)" stroke="var(--panel)"/></g><circle cx="20" cy="20" r="7" fill="var(--route)"/><path d="M136 90 V70" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><path d="M136 70 L149 75 L136 80 Z" fill="var(--hit)"/></svg>
-        <figcaption><span class="key" style="background:var(--hit)"></span>Green shows how far you got, and the stone marks where you went wrong. <span class="key" style="background:var(--wrong)"></span>Orange tiles are off the trail, and any wall you hit appears.</figcaption>
+        <figcaption><span class="nw"><span class="key" style="background:var(--hit)"></span>Green is</span> how far you got, and the stone is where you went wrong. <span class="nw"><span class="key" style="background:var(--wrong)"></span>Orange is</span> off the trail. Walls you hit appear.</figcaption>
       </figure>
       <figure class="howfig">
         <svg viewBox="0 0 160 134" role="img" aria-label="The same try as above, with the hidden trail shown. The trail has 5 numbered forks. The try goes the right way at fork 1, the wrong way at fork 2, and nothing after that counts: green, amber, empty, empty, empty."><rect x="5" y="5" width="150" height="90" rx="3" fill="var(--panel)" stroke="var(--hedge)" stroke-width="3.5"/><path d="M35 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M65 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M95 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M125 5 V95" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 35 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><path d="M5 65 H155" stroke="var(--grid)" stroke-dasharray="3 4"/><polyline points="50,20 50,50" fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="2 4" stroke-linecap="round"/><polyline points="110,20 140,20" fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="2 4" stroke-linecap="round"/><polyline points="110,50 140,50" fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="2 4" stroke-linecap="round"/><polyline points="20,20 50,20 80,20 110,20 110,50 110,80 140,80" fill="none" stroke="var(--hit)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" opacity=".35"/><polyline points="20,20 50,20 80,20 80,50 80,80 110,80 140,80" fill="none" stroke="var(--route)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="6.5" fill="var(--route)"/><path d="M136 90 V70" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><path d="M136 70 L149 75 L136 80 Z" fill="var(--hit)"/><circle cx="50" cy="20" r="7.5" fill="var(--hit)" stroke="var(--panel)" stroke-width="1.5"/><text x="50" y="23.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">1</text><circle cx="80" cy="20" r="7.5" fill="var(--partial)" stroke="var(--panel)" stroke-width="1.5"/><text x="80" y="23.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">2</text><circle cx="110" cy="20" r="7.5" fill="var(--panel)" stroke="var(--muted)" stroke-width="2"/><text x="110" y="23.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">3</text><circle cx="110" cy="50" r="7.5" fill="var(--panel)" stroke="var(--muted)" stroke-width="2"/><text x="110" y="53.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">4</text><circle cx="110" cy="80" r="7.5" fill="var(--panel)" stroke="var(--muted)" stroke-width="2"/><text x="110" y="83.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">5</text><circle cx="36" cy="114" r="8" fill="var(--hit)"/><text x="36" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">1</text><circle cx="54" cy="114" r="8" fill="var(--partial)"/><text x="54" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">2</text><circle cx="72" cy="114" r="7.5" fill="none" stroke="var(--muted)" stroke-width="2"/><text x="72" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">3</text><circle cx="90" cy="114" r="7.5" fill="none" stroke="var(--muted)" stroke-width="2"/><text x="90" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">4</text><circle cx="108" cy="114" r="7.5" fill="none" stroke="var(--muted)" stroke-width="2"/><text x="108" y="117.6" font-size="10" font-weight="700" text-anchor="middle" fill="var(--muted)">5</text><g opacity=".5"><path d="M122 122 V106" stroke="var(--muted)" stroke-width="1.8" stroke-linecap="round"/><path d="M122 106 L132 110 L122 114 Z" fill="var(--muted)"/></g></svg>
-        <figcaption>Each circle is one fork:<br><span style="white-space:nowrap"><span class="key round" style="background:var(--hit)"></span>right way · <span class="key round" style="background:var(--partial)"></span>wrong way · <span class="key round hollow"></span>not reached</span><br>The flag lights up when you reach it. Tap a row to see that try on the board.</figcaption>
+        <figcaption>Each circle is a fork:<br><span style="white-space:nowrap"><span class="key round" style="background:var(--hit)"></span>right way · <span class="key round" style="background:var(--partial)"></span>wrong way · <span class="key round hollow"></span>not reached</span><br>The flag lights up when you finish. Tap a row to see that try.</figcaption>
       </figure>
-      <p>Hard mode: no orange tiles, and forks aren't marked on the board.</p>
+      <p>Hard mode: no orange tiles or fork marks.</p>
     </section>
     <section class="howto" id="howFog" hidden>
       <h2 id="howTitleFog">How to play Fog</h2>
-      <p class="heat-intro">Find the hidden flag in the dark. Each tile shows how many tiles away the flag is:<br><span class="heat"><span><span class="key" style="background:var(--hot)"></span>hot (1–2)</span> · <span><span class="key" style="background:var(--neutral)"></span>neutral (3–4)</span> · <span><span class="key" style="background:var(--cold)"></span>cold (5+)</span></span></p>
+      <p class="heat-intro">Find the hidden flag in the dark. Tiles show how far away it is:<br><span class="heat"><span><span class="key" style="background:var(--hot)"></span>hot (1–2)</span> · <span><span class="key" style="background:var(--neutral)"></span>neutral (3–4)</span> · <span><span class="key" style="background:var(--cold)"></span>cold (5+)</span></span></p>
       <figure class="howfig">
         <svg viewBox="0 0 160 100" role="img" aria-label="Moving: your explored tiles light up with their heat, and you tap the next tile to step onto it">
           <rect x="5" y="5" width="150" height="90" rx="4" fill="var(--fog)"/>
@@ -336,9 +336,9 @@ details ul { padding-left: 18px; }
           <circle cx="110" cy="50" r="11" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="3 3"/>
           <path d="M112 66 l-2 -12 l8 6 z" fill="var(--ink)"/>
         </svg>
-        <figcaption>Tap a tile next to you to step onto it. Tap any explored tile to jump back for free.</figcaption>
+        <figcaption>Tap a tile next to you to step. Jumping back to any explored tile is free.</figcaption>
       </figure>
-      <p>You have 5 torches. Dead ends put them out. Lose them all and the fog wins.</p>
+      <p>Dead ends put out your 5 torches. Lose them all and the fog wins.</p>
       <div class="howfig-row">
         <figure class="howfig">
           <svg viewBox="0 0 100 100" role="img" aria-label="Short dead end: one tile off the corridor">
@@ -348,7 +348,7 @@ details ul { padding-left: 18px; }
             <path d="M5 65 H35 M65 65 H95 M5 95 H95 M35 35 H65 M35 35 V65 M65 35 V65" stroke="var(--panel)" stroke-width="7.5" stroke-linecap="round" fill="none"/><path d="M5 65 H35 M65 65 H95 M5 95 H95 M35 35 H65 M35 35 V65 M65 35 V65" stroke="var(--hedge)" stroke-width="4" stroke-linecap="round" fill="none"/>
             <circle cx="50" cy="50" r="7" fill="var(--route)"/><circle cx="50" cy="50" r="2.7" fill="var(--panel)"/>
           </svg>
-          <figcaption><b>Short dead end</b><br><span class="nw">1 tile deep</span><br><span class="nw">puts out 1 🔥</span></figcaption>
+          <figcaption><b>Short</b> (1 tile)<br><span class="nw">puts out 1 🔥</span></figcaption>
         </figure>
         <figure class="howfig">
           <svg viewBox="0 0 100 100" role="img" aria-label="Long dead end: a corridor two tiles deep off the main path, ending in a wall">
@@ -358,7 +358,7 @@ details ul { padding-left: 18px; }
             <path d="M20 80 H50 V20" stroke="var(--route)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity=".55"/>
             <circle cx="50" cy="20" r="7" fill="var(--route)"/><circle cx="50" cy="20" r="2.7" fill="var(--panel)"/>
           </svg>
-          <figcaption><b>Long dead end</b><br><span class="nw">2+ tiles deep</span><br><span class="nw">puts out 2 🔥🔥</span></figcaption>
+          <figcaption><b>Long</b> (2+ tiles)<br><span class="nw">puts out 2 🔥🔥</span></figcaption>
         </figure>
       </div>
       <figure class="howfig">
@@ -371,9 +371,8 @@ details ul { padding-left: 18px; }
           <path d="M106 61 V39" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/>
           <path d="M106 39 L121 44.5 L106 50 Z" fill="var(--hit)"/>
         </svg>
-        <figcaption>Follow the heat to the flag.</figcaption>
+        <figcaption>Follow the heat to the flag. Your score: 🔥 torches left and 👣 tiles explored.</figcaption>
       </figure>
-      <p>Your result: 🔥 torches left and 👣 tiles explored.</p>
       <p>Hard mode: no turning back in a corridor.</p>
     </section>
       <button class="btn primary modal-play" id="howOk">Play</button>
