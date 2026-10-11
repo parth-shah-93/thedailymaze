@@ -240,6 +240,11 @@ details ul { padding-left: 18px; }
     <canvas id="board" aria-label="Maze board" tabindex="0"></canvas>
   </section>
 
+  <div class="legend" id="fogLegend" hidden>
+    <span><span class="key" style="background:var(--hot)"></span>Hot: flag 1–2 tiles away</span>
+    <span><span class="key" style="background:var(--neutral)"></span>Neutral: 3–4</span>
+    <span><span class="key" style="background:var(--cold)"></span>Cold: 5+</span>
+  </div>
   <div class="legend" id="pathLegend">
     <span><span class="key" style="background:var(--hit-soft);outline:1px solid var(--hit)"></span>On the trail</span>
     <span id="legOrange"><span class="key" style="background:var(--wrong-soft);outline:1px solid var(--wrong)"></span>Not on the trail</span>
@@ -1208,6 +1213,7 @@ details ul { padding-left: 18px; }
     $("barLabel").textContent = mode === "path" ? "Trail length" : "Tiles explored";
     $("pathSettings").hidden = false;
     $("pathLegend").hidden = mode !== "path";
+    $("fogLegend").hidden = mode !== "fog";
     const fogMode = mode === "fog", hardOn = fogMode ? F.hard : P.hard;
     const locked = fogMode ? (F.hist.length > 1 || F.done) : (P.guesses.length > 0 || P.done);
     $("hardToggle").checked = hardOn;
