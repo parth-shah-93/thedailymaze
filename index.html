@@ -247,18 +247,18 @@ details ul { padding-left: 18px; }
     <span><span class="key" style="background:var(--cold)"></span>Cold: 5+</span>
   </div>
 
+  <div class="controls" id="fogControls" hidden>
+    <div class="meter">
+      <div class="status"><span class="lanterns" id="lanterns" aria-label="Torches left"></span><span class="hint">Going back is free. Tap any explored tile to jump there.</span></div>
+    </div>
+  </div>
+
   <div class="status" id="status"></div>
 
   <div class="controls" id="pathControls">
     <button class="btn" id="undoBtn">Undo</button>
     <button class="btn" id="clearBtn">Clear</button>
     <button class="btn primary" id="submitBtn" disabled>Submit trail</button>
-  </div>
-
-  <div class="controls" id="fogControls" hidden>
-    <div class="meter">
-      <div class="status"><span class="lanterns" id="lanterns" aria-label="Torches left"></span><span class="hint">Going back is free. Tap any explored tile to jump there.</span></div>
-    </div>
   </div>
 
   <div class="legend" id="pathLegend">
