@@ -130,7 +130,7 @@ button:focus-visible, summary:focus-visible { outline: 3px solid var(--route); o
 .fin svg { width: 22px; height: 26px; } .fin.on { color: var(--hit); opacity: 1; } .fin.empty { opacity: .2; }
 .fk.cur { background: var(--route); }
 .fk.empty { background: transparent; box-sizing: border-box; border: 2px dashed var(--grid); }
-.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.legend { display: flex; gap: 6px 14px; flex-wrap: wrap; justify-content: center; font-size: 13px; color: var(--muted); }
 .legend span { display: inline-flex; align-items: center; }
 .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .copied { font-size: 13px; color: var(--hit); }
@@ -183,7 +183,8 @@ details ul { padding-left: 18px; }
 .toggle input:checked + .track::after { transform: translateX(16px); }
 .toggle input:focus-visible + .track { outline: 3px solid var(--route); outline-offset: 2px; }
 .toggle input:disabled + .track { opacity: .5; }
-.settings .note { color: var(--muted); font-size: 13px; }
+.settings .note { color: var(--muted); font-size: 13px; flex-basis: 100%; }
+.settings .boardbar { margin: 0; }
 .stats { background: var(--panel); border: 2px solid var(--hedge); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 14px; }
 .stats h2 { font-family: var(--font-display); font-size: 16px; font-weight: 500; margin: 0; }
 .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; }
@@ -232,10 +233,10 @@ details ul { padding-left: 18px; }
       <span class="track" aria-hidden="true"></span>
       Hard mode
     </label>
+    <div class="boardbar" id="boardbar"><span id="barLabel">Trail length</span><b class="len" id="tileCount"></b></div>
     <span class="note" id="hardNote">No orange tiles, and forks aren't marked on the board.</span>
   </div>
 
-  <div class="boardbar" id="boardbar"><span id="barLabel">Trail length</span><b class="len" id="tileCount"></b></div>
   <section class="board-wrap">
     <canvas id="board" aria-label="Maze board" tabindex="0"></canvas>
   </section>
@@ -244,12 +245,6 @@ details ul { padding-left: 18px; }
     <span><span class="key" style="background:var(--hot)"></span>Hot: flag 1–2 tiles away</span>
     <span><span class="key" style="background:var(--neutral)"></span>Neutral: 3–4</span>
     <span><span class="key" style="background:var(--cold)"></span>Cold: 5+</span>
-  </div>
-  <div class="legend" id="pathLegend">
-    <span><span class="key" style="background:var(--hit-soft);outline:1px solid var(--hit)"></span>On the trail</span>
-    <span id="legOrange"><span class="key" style="background:var(--wrong-soft);outline:1px solid var(--wrong)"></span>Not on the trail</span>
-    <span id="legMarker"><svg class="cairn" viewBox="0 0 20 20" aria-hidden="true"><ellipse cx="10" cy="15" rx="7" ry="3.2"/><ellipse cx="10.3" cy="10" rx="5.2" ry="2.6"/><ellipse cx="9.8" cy="5.6" rx="3.4" ry="2.1"/></svg>Trail marker: where your try went wrong</span>
-    <span><span class="key" style="background:var(--hedge)"></span>Wall (invisible until you cross it)</span>
   </div>
 
   <div class="status" id="status"></div>
@@ -264,6 +259,13 @@ details ul { padding-left: 18px; }
     <div class="meter">
       <div class="status"><span class="lanterns" id="lanterns" aria-label="Torches left"></span><span class="hint">Going back is free. Tap any explored tile to jump there.</span></div>
     </div>
+  </div>
+
+  <div class="legend" id="pathLegend">
+    <span><span class="key" style="background:var(--hit-soft);outline:1px solid var(--hit)"></span>On trail</span>
+    <span id="legOrange"><span class="key" style="background:var(--wrong-soft);outline:1px solid var(--wrong)"></span>Off trail</span>
+    <span id="legMarker"><svg class="cairn" viewBox="0 0 20 20" aria-hidden="true"><ellipse cx="10" cy="15" rx="7" ry="3.2"/><ellipse cx="10.3" cy="10" rx="5.2" ry="2.6"/><ellipse cx="9.8" cy="5.6" rx="3.4" ry="2.1"/></svg>Went wrong</span>
+    <span><span class="key" style="background:var(--hedge)"></span>Wall</span>
   </div>
 
   <ol class="guesses" id="guesses"></ol>
