@@ -823,7 +823,7 @@ details ul { padding-left: 18px; }
     return depth;
   }
   // Tie-breaker: new tiles explored beyond the shortest path to the flag (lower is better).
-  // Fog result, two plain lines: torches left (how well you did) and tiles explored vs the shortest route (how quickly).
+  // Fog result, two plain lines: torches left (how well you did) and tiles explored (how quickly).
   const torchesLeft = () => Math.max(0, LANTERNS - F.deadEnds.length);
   function torchLine() {
     const left = torchesLeft();
@@ -831,7 +831,7 @@ details ul { padding-left: 18px; }
   }
   function stepsLine() {
     const explored = F.visited.size - 1;
-    return "👣 " + explored + " tile" + (explored === 1 ? "" : "s") + " explored " + (F.won ? "(shortest: " + F.par + ")" : "(flag not found)");
+    return "👣 " + explored + " tile" + (explored === 1 ? "" : "s") + " explored" + (F.won ? "" : " (flag not found)"); // no shortest route here: it would spoil the maze for anyone you share with
   }
   function fogStep(n, silent) {
     if (F.done) return false;
