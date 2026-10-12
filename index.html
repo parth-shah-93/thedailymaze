@@ -191,6 +191,11 @@ details ul { padding-left: 18px; }
 .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; }
 .tiles div { display: flex; flex-direction: column; gap: 2px; }
 .tiles .num { font-size: 26px; line-height: 1.1; }
+.routecmp { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: center; }
+.routecmp div { display: flex; flex-direction: column; gap: 2px; padding: 10px 6px; border-radius: 10px; border: 1px solid var(--grid); }
+.routecmp .best { background: var(--hit-soft); border-color: var(--hit); }
+.routecmp .num { font-family: var(--font-data); font-size: 30px; font-weight: 700; line-height: 1.1; }
+.routecmp span:last-child { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
 .tiles span:last-child { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
 .dist { display: flex; flex-direction: column; gap: 4px; }
 .dist-row { display: grid; grid-template-columns: 16px 1fr; gap: 8px; align-items: center; font-family: var(--font-data); font-size: 12px; }
@@ -294,6 +299,10 @@ details ul { padding-left: 18px; }
         <div><span class="num" id="rsWin">0</span><span>Win %</span></div>
         <div><span class="num" id="rsStreak">0</span><span>Streak</span></div>
         <div><span class="num" id="rsMax">0</span><span>Best streak</span></div>
+      </div>
+      <div class="routecmp" id="routeCompare" hidden>
+        <div><span class="num" id="rcYou"></span><span>Tiles you explored</span></div>
+        <div class="best"><span class="num" id="rcBest"></span><span>Shortest route</span></div>
       </div>
       <pre id="shareText" class="share"></pre>
       <div class="row">
@@ -1304,7 +1313,7 @@ details ul { padding-left: 18px; }
       const used = Math.min(LANTERNS, F.deadEnds.length);
       const shortN = F.deadEnds.filter(x => x === "y").length, longN = (F.deadEnds.length - shortN) / 2;
       const ends = [shortN ? shortN + " short dead end" + (shortN === 1 ? "" : "s") : "", longN ? longN + " long dead end" + (longN === 1 ? "" : "s") : ""].filter(Boolean).join(" and ");
-      if (F.done && F.won) msg = "🏁 You found the flag with " + left + " torch" + (left === 1 ? "" : "es") + " left, exploring " + (F.visited.size - 1) + " tiles. The shortest route was " + F.par + ".";
+      if (F.done && F.won) msg = "🏁 You found the flag with " + left + " torch" + (left === 1 ? "" : "es") + " left. You explored <b>" + (F.visited.size - 1) + "</b> tiles. The shortest route was <b>" + F.par + "</b>.";
       else if (F.done) msg = "Your last torch went out. The fog wins. The shortest path is dashed.";
       else if (F.deadEnds.length) msg = F.lastBurn === 2 ? "Long dead end! 2 torches went out." : "Dead end! A torch went out.";
       else msg = "The flag is hidden. Tiles get hotter the closer they are to it.";
@@ -1318,6 +1327,9 @@ details ul { padding-left: 18px; }
       $("resultTitle").textContent = won ? (mode === "path" ? "You found the trail." : "You found the flag.") : (mode === "path" ? "The trail stayed hidden today." : "The fog won this time.");
       $("shareText").textContent = shareText();
       const fog = mode === "fog";
+      // Fog: your tile count next to the shortest route, shown big (it stays out of the share text).
+      $("routeCompare").hidden = !fog;
+      if (fog) { $("rcYou").textContent = String(F.visited.size - 1); $("rcBest").textContent = String(F.par); }
       const st = computeStats(fog ? FOG_STATS : STATS_STORE, fog ? [5, 4, 3, 2, 1] : Array.from({ length: MAX_GUESSES }, (_, i) => i + 1));
       $("resultStats").hidden = practice;
       $("rsPlayed").textContent = st.played; $("rsWin").textContent = st.winPct; $("rsStreak").textContent = st.cur; $("rsMax").textContent = st.max;
