@@ -71,6 +71,7 @@
   --near-soft: #47391a; --miss: #66766c; --miss-soft: #28322c; --bad: #e86a5f; --fog: #070a08; --glimpse: #3a4a40; --alt: #a58cf0; --alt-soft: #3a2f5a; --wrong: #f08a45; --wrong-soft: #a34f0f; --partial: #e6b04f; --hot: #7a2f1c; --neutral: #4d4733; --cold: #1f3350; --start: #55635a; --scrim: rgba(0, 0, 0, 0.65); color-scheme: dark;
 }
 * { box-sizing: border-box; }
+html, button { touch-action: manipulation; } /* no double-tap zoom, so quick taps register */
 body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; }
 .wrap { max-width: 540px; margin: 0 auto; padding-inline: 16px; padding-block: 18px 40px; display: flex; flex-direction: column; gap: 16px; }
 .top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-bottom: 2px solid var(--hedge); padding-bottom: 10px; }
@@ -1179,9 +1180,16 @@ details ul { padding-left: 18px; }
     if (mode === "path" && ev.key === "Backspace") { ev.preventDefault(); undo(); }
   });
   function undo() { if (!P.done && P.cur.length > 1) { P.cur.pop(); render(); } }
-  document.getElementById("undoBtn").addEventListener("click", undo);
-  document.getElementById("clearBtn").addEventListener("click", () => { if (!P.done) { P.cur = [P.start]; render(); } });
-  document.getElementById("submitBtn").addEventListener("click", submitPath);
+  // Trail buttons act on the finger lifting, not only on "click": phones sometimes swallow the first click
+  // (a double-tap-to-zoom guess, or the tap right after drawing), which made Submit need two taps.
+  function onTap(el, fn) {
+    let last = 0;
+    el.addEventListener("pointerup", ev => { if (ev.pointerType === "mouse" || el.disabled) return; last = Date.now(); fn(); });
+    el.addEventListener("click", () => { if (Date.now() - last < 700) return; fn(); });
+  }
+  onTap(document.getElementById("undoBtn"), undo);
+  onTap(document.getElementById("clearBtn"), () => { if (!P.done) { P.cur = [P.start]; render(); } });
+  onTap(document.getElementById("submitBtn"), submitPath);
 
   // ---------- UI ----------
   const $ = id => document.getElementById(id);
