@@ -255,6 +255,13 @@ details ul { padding-left: 18px; }
     <span><span class="key" style="background:var(--cold)"></span>Cold: 5+</span>
   </div>
 
+  <div class="legend" id="pathLegend">
+    <span><span class="key" style="background:var(--hit-soft);outline:1px solid var(--hit)"></span>On trail</span>
+    <span id="legOrange"><span class="key" style="background:var(--wrong-soft);outline:1px solid var(--wrong)"></span>Off trail</span>
+    <span id="legFork"><svg class="cairn" viewBox="0 0 20 20" aria-hidden="true"><ellipse cx="10" cy="15" rx="7" ry="3.2"/><ellipse cx="10.3" cy="10" rx="5.2" ry="2.6"/><ellipse cx="9.8" cy="5.6" rx="3.4" ry="2.1"/></svg>Fork</span>
+    <span><span class="key" style="background:var(--hedge)"></span>Wall</span>
+  </div>
+
   <div class="controls" id="fogControls" hidden>
     <div class="meter">
       <div class="status"><span class="lanterns" id="lanterns" aria-label="Torches left"></span></div>
@@ -267,13 +274,6 @@ details ul { padding-left: 18px; }
     <button class="btn" id="undoBtn">Undo</button>
     <button class="btn" id="clearBtn">Clear</button>
     <button class="btn primary" id="submitBtn" disabled>Submit trail</button>
-  </div>
-
-  <div class="legend" id="pathLegend">
-    <span><span class="key" style="background:var(--hit-soft);outline:1px solid var(--hit)"></span>On trail</span>
-    <span id="legOrange"><span class="key" style="background:var(--wrong-soft);outline:1px solid var(--wrong)"></span>Off trail</span>
-    <span id="legFork"><svg class="cairn" viewBox="0 0 20 20" aria-hidden="true"><ellipse cx="10" cy="15" rx="7" ry="3.2"/><ellipse cx="10.3" cy="10" rx="5.2" ry="2.6"/><ellipse cx="9.8" cy="5.6" rx="3.4" ry="2.1"/></svg>Fork</span>
-    <span><span class="key" style="background:var(--hedge)"></span>Wall</span>
   </div>
 
   <ol class="guesses" id="guesses"></ol>
