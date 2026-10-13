@@ -1274,7 +1274,7 @@ details ul { padding-left: 18px; }
       }
       else if (ready) msg = "Ready to submit.";
       else if (atFlag) msg = (P.cur.length > P.sol.length ? "Too long" : "Too short") + ": the trail is exactly " + P.sol.length + " tiles.";
-      else if (P.cur.length < 2) msg = "Draw a trail from the blue dot to the flag.";
+      else if (P.cur.length < 2) msg = P.hard ? "Draw a trail from the blue dot to the flag." : "Draw a trail from the blue dot to the flag. It goes through every stone.";
       else if (P.cur.length > P.sol.length) msg = "Too long: the trail is exactly " + P.sol.length + " tiles.";
       else msg = "Keep going to the flag.";
       const lenTag = P.done ? "" : "<b class=\"len" + (P.cur.length > P.sol.length || (atFlag && !ready) ? " over" : ready ? " ok" : "") + "\">" + P.cur.length + " / " + P.sol.length + " tiles</b> ";
