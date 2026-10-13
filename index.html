@@ -1274,7 +1274,7 @@ details ul { padding-left: 18px; }
       }
       else if (ready) msg = "Ready to submit.";
       else if (atFlag) msg = (P.cur.length > P.sol.length ? "Too long" : "Too short") + ": the trail is exactly " + P.sol.length + " tiles.";
-      else if (P.cur.length < 2) msg = P.hard ? "Draw a trail from the blue dot to the flag." : "Draw a trail from the blue dot to the flag. It goes through every stone.";
+      else if (P.cur.length < 2) msg = P.hard ? "Draw a trail from the blue dot to the flag." : "Draw a trail to the flag through every stone.";
       else if (P.cur.length > P.sol.length) msg = "Too long: the trail is exactly " + P.sol.length + " tiles.";
       else msg = "Keep going to the flag.";
       const lenTag = P.done ? "" : "<b class=\"len" + (P.cur.length > P.sol.length || (atFlag && !ready) ? " over" : ready ? " ok" : "") + "\">" + P.cur.length + " / " + P.sol.length + " tiles</b> ";
@@ -1323,7 +1323,7 @@ details ul { padding-left: 18px; }
       if (F.done && F.won) msg = "🏁 You found the flag with " + left + " torch" + (left === 1 ? "" : "es") + " left. You explored <b>" + (F.visited.size - 1) + "</b> tiles. The shortest route was <b>" + F.par + "</b>.";
       else if (F.done) msg = "Your last torch went out. The fog wins. The shortest path is dashed.";
       else if (F.deadEnds.length) msg = F.lastBurn === 2 ? "Long dead end! 2 torches went out." : "Dead end! A torch went out.";
-      else msg = "The flag is hidden. Tiles get hotter the closer they are to it.";
+      else msg = "Tiles get hotter the closer you are to the flag.";
       st.innerHTML = "<span>" + msg + "</span>";
     }
 
