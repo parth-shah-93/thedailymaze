@@ -466,7 +466,7 @@ details ul { padding-left: 18px; }
   const puzzleNo = Math.max(1, Math.floor((Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(2026, 9, 9)) / 864e5) + 1); // launch day, Oct 9 2026, is #1
   const dateLabel = now.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
   // Path v5: routes are 6 straight lines. Older Path saves no longer match the rules.
-  const STORE = "mazedle-path33-" + dateKey;
+  const STORE = "mazedle-path34-" + dateKey;
   const FOG_STORE = "mazedle-fog13-" + dateKey;
   const STATS_STORE = "mazedle-stats2";
   const HARD_PREF = "mazedle-hard";
@@ -536,6 +536,8 @@ details ul { padding-left: 18px; }
   const RATE_TOP = 60;     // how many of the toughest-looking candidates the simulated player tries each day
   const FORKS = 5;         // like Wordle's 5 letters: every path has exactly 5 forks
   const FORK_GAP = 2;      // forks sit at least this many steps apart along the trail, so the stones spread out
+  const MIN_TRAIL = 16;    // the trail is at least this many tiles, so it crosses much of the board
+  const MIN_QUADRANTS = 3; // forks land in at least 3 of the board's 4 quarters
 
   function distanceToPath(open, W, H, solSet) {
     const dist = new Int16Array(W * H).fill(-1), q = [];
@@ -595,6 +597,13 @@ details ul { padding-left: 18px; }
       if (DIRS.some(d => (open[c] & d.b) && !solSet.has((y + d.dy) * W + x + d.dx))) idx.push(i);
     }
     return idx;
+  }
+  // Forks spread over the board: no two touch (not even corner to corner) and they cover at least 3 quarters.
+  function forksSpread(m) {
+    const pts = m.forks.map(si => [m.sol[si] % m.W, (m.sol[si] / m.W) | 0]);
+    for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++)
+      if (Math.max(Math.abs(pts[i][0] - pts[j][0]), Math.abs(pts[i][1] - pts[j][1])) < 2) return false;
+    return new Set(pts.map(([x, y]) => (x < m.W / 2 ? 0 : 1) + (y < m.H / 2 ? 0 : 2))).size >= MIN_QUADRANTS;
   }
   // How many forks offer 3 ways to go (the most a square tile allows after arriving from one side).
   function threeWayForks(m) {
@@ -690,6 +699,7 @@ details ul { padding-left: 18px; }
       for (let k = 0; k < 3 && threeWayForks(m) < THREE_WAY; k++) if (!addThreeWay(m, rng)) break;
       if (threeWayForks(m) < THREE_WAY || m.forks[0] === 0) continue;
       if (m.forks.some((si, k) => k && si - m.forks[k - 1] < FORK_GAP)) continue;
+      if (sol.length < MIN_TRAIL || !forksSpread(m)) continue;
       m.dist = distanceToPath(m.open, W, H, solSet); m.score = scoreMaze(m); all.push(m);
     }
     // Try another batch in the rare case none qualify.
