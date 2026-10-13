@@ -1278,7 +1278,7 @@ details ul { padding-left: 18px; }
       else if (P.cur.length > P.sol.length) msg = "Too long: the trail is exactly " + P.sol.length + " tiles.";
       else msg = "Keep going to the flag.";
       const lenTag = P.done ? "" : "<b class=\"len" + (P.cur.length > P.sol.length || (atFlag && !ready) ? " over" : ready ? " ok" : "") + "\">" + P.cur.length + " / " + P.sol.length + " tiles</b> ";
-      st.innerHTML = "<span class=\"hint\">" + msg + "</span>";
+      st.innerHTML = "<span>" + msg + "</span>"; // same style as Fog's message
       // Tile counter: fixed just above the board so it doesn't move while you draw.
       const tc = $("tileCount"), over = P.cur.length > P.sol.length || (atFlag && !ready);
       tc.className = "len" + (over ? " over" : ready ? " ok" : "");
