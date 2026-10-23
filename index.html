@@ -466,7 +466,7 @@ details ul { padding-left: 18px; }
   const puzzleNo = Math.max(1, Math.floor((Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(2026, 9, 9)) / 864e5) + 1); // launch day, Oct 9 2026, is #1
   const dateLabel = now.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
   // Path v5: routes are 6 straight lines. Older Path saves no longer match the rules.
-  const STORE = "mazedle-path34-" + dateKey;
+  const STORE = "mazedle-path35-" + dateKey;
   const FOG_STORE = "mazedle-fog13-" + dateKey;
   const STATS_STORE = "mazedle-stats2";
   const HARD_PREF = "mazedle-hard";
@@ -529,11 +529,11 @@ details ul { padding-left: 18px; }
     { name: "Hardest", tier: 2, pct: 0.97 }
   ];
   const dailyLevel = key => Math.floor(rngFrom(key + "|difficulty")() * LEVELS.length);
-  const CANDIDATES = 8000; // mazes checked per day for 5 well-spaced forks, no short wrong ways and a 3-way fork
+  const POOL = 10;         // the day's Trail is picked from this many mazes that pass every rule
+  const MAX_SCAN = 600000; // give up widening the pool after checking this many random mazes
   const THREE_WAY = 1;     // at least this many forks offer 3 ways to go
   const MIN_BRANCH = 2;    // every wrong way at a fork runs at least this many tiles before it dead-ends
   const SIZE = 7;          // the Trail board is always 7x7
-  const RATE_TOP = 60;     // how many of the toughest-looking candidates the simulated player tries each day
   const FORKS = 5;         // like Wordle's 5 letters: every path has exactly 5 forks
   const FORK_GAP = 2;      // forks sit at least this many steps apart along the trail, so they spread out
   const MIN_TRAIL = 16;    // the trail is at least this many tiles, so it crosses much of the board
@@ -686,32 +686,46 @@ details ul { padding-left: 18px; }
     }
     return false;
   }
+  // One Trail candidate: random maze number i for a seed. Returns it only if it passes every rule, cheapest checks first.
+  function trailCandidate(seed, i, tier) {
+    const W = SIZE, H = SIZE, rng = rngFrom(seed + "|path|" + i);
+    const open = kruskalMaze(W, H, rng);
+    const [start, exit] = pickEnds(rng, tier, W, H);
+    const sol = bfs(open, W, H, start, exit);
+    if (sol.length < MIN_TRAIL) return null;                       // long enough to cross much of the board
+    const forks = findForks(open, sol, W, H);
+    if (forks.length !== FORKS || forks[0] === 0) return null;      // exactly 5 forks, never at the start
+    if (forks.some((si, k) => k && si - forks[k - 1] < FORK_GAP)) return null;
+    const m = { W, H, open, start, exit, sol, solSet: new Set(sol), forks, idx: i };
+    if (!forksSpread(m) || minBranch(open, sol, W) < MIN_BRANCH) return null;
+    for (let k = 0; k < 3 && threeWayForks(m) < THREE_WAY; k++) if (!addThreeWay(m, rng)) break;
+    if (threeWayForks(m) < THREE_WAY || m.forks[0] === 0 || !forksSpread(m)) return null;
+    return m;
+  }
+  // The day's pick: gather POOL passing mazes, have a simulated player try each a few times, and take the one
+  // at the day's difficulty (pct) by how many tries it needed. This finds deceptive mazes.
+  function searchTrail(seed, tier, pct) {
+    const cands = [];
+    for (let i = 0; cands.length < POOL && (i < MAX_SCAN || !cands.length); i++) { const m = trailCandidate(seed, i, tier); if (m) cands.push(m); }
+    const rr = rngFrom("rate|" + seed);
+    cands.forEach(c => { c.dist = distanceToPath(c.open, c.W, c.H, c.solSet); c.score = scoreMaze(c); let t = 0; for (let k = 0; k < 3; k++) t += simTries(c, rr); c.simTries = t / 3; });
+    cands.sort((a, b) => a.simTries - b.simTries || a.score - b.score || a.idx - b.idx);
+    return cands[Math.min(cands.length - 1, Math.floor(pct * cands.length))];
+  }
+  // Searching takes seconds on a phone, so the daily picks are worked out ahead of time with searchTrail itself
+  // and stored here: one maze number (base 36) per day from TRAIL_FROM. Days outside the list fall back to searching.
+  const TRAIL_FROM = "2026-10-23";
+  const TRAIL_DAYS = "1v4w,ewt,3e3v,5jhb,1uws,4qc,2igt,1v4s,35pb,1v5d,3y3n,1s7k,40sz,6w46,2uwr,75z,1ajm,osc,1w4j,wc3,3vvg,1jf4,27w1,1jrz,5wj8,1vze,qeb,2797,141j,xzb,6x2y,2mn,2ji5,5qf3,116c,5ko8,4g7p,151,zhq,4om1,id1,1jr5,17j7,5hn3,zi8,5am0,3tf2,8226,8x1b,231b,z59,2ig,g15,1jyi,19vu,3yv4,197q,7yr7,j5o,2rl3,w5d,1u00,1bif,981,hxq,7lsn,uio,6dxw,2v7v,2jve,6thc,15g6,6amm,e0u,2v9d,2i6h,1ewf,a2fr,1kc4,1uir,1jyz,1n4x,2vof,500c,ntd,2ffg,29ix,1v28,vmx,2myp,2s7l,qm2,2nv6,17wi,6sql,1b8g,mp2,72xv,5x1f,3rdh,q1r,1yc7,331l,o84,4lrn,234b,170i,1h5y,1tmr,2wvr,267q,ep4,2xwd,2572,1bfn,f56,79qm,k4l,6yex,5tl7,12tt,2fjn,7vep,1x5p,1mcu,2qfb,1b9c,86u5,1c8t,a4k,5jyh,3i9n,35dg,2br0,k7m,23t2,360t,1meh,13rm,qun,qwh,1nqd,1nio,1mcj,1v0q,nxj,4wfr,m9q,riy,4ykf,446e,n06,7c3,32nl,e5q,5asy,8u18,41cy,30hf,2kyk,11gf,boc,20xa,1d9c,2i3v,4rr,84ar,abo,3umr,3nym,6by,28pi,16e6,2mbc,1lvc,28a9,55i7,18y,k31,se4,j8v,3n3v,33r2,36wd,30zj,21yu,4qse,219,1fzy,ixe,p9q,2bue,av8,scq,48ks,zez,4e1k,1dnf,2k80,68an,20mz,g51,5q3l,txx,2mgt,7z5g,3j8x,1nnn,1xjl,2grm,aof2,7e0a,2y7j,20fj,5sfz,2wdx,47y1,2l71,225p,5d6t,1h7o,q75,3tnd,qm3,4gp,21tu,a69,3a0a,h7c,2h95,ue8,22qu,15so,288k,2pnd,q2n,49qs,1e1p,52b4,fua,1at5,4214,45wc,gih,1up0,2xpz,pky,68jo,imy,55q,1vjj,4shb,lkx,74ef,2adj,bfn,1jc,2920,3sr2,37w,1pea,2smz,4em,109e,1d4a,srr,280i,o5f,39bo,1luv,1l30,4v1a,1hgp,1iio,1snv,1kuc,8oz,2wku,7hoa,196k,2bdk,dac,4kfm,4fs,f9c,90m,2pak,8pg,3g5k,4xyn,1pj5,1g7o,4nc7,4x0e,6vh3,da1,1qvp,1agj,nuk,r45,2dj8,118d,2f9u,2ruy,46l,1gn5,bfs,11tw,5vu6,69qr,2teo,2iem,1ddu,1ng0,rzv,486k,1qn3,3d69,5b2e,4ef,7vyl,21bo,7ngd,2kqs,e0o,2pj1,1jbi,10k1,2mfy,ykn,4rj,2gr5,37yr,5d5i,15ht,2o97,24sx,9vt,4dso,11cj,tv9,1qcd,14ex,q0r,1ffb,ilz,1ces,20kl,6o8t,1v35,1v04,2c0z,47ib,lq2,7pcd,byg,1954,1j3s,6tsb,2klf,18te,1ihu,ewi,23x6,26zq,3dfb,1jpm,2241,th7,6c01,3iba,or6,wjc,5plf,40yw,27oz,1euv,2btn,9bs5,1vzd,aoe,syc,85yl,kpg,ikp,3ed6,1i6d,237j,1eu3,4j8q,r29,2h7z,1lff,1t1g,pyx,bnib,2rav,268k,3690,6svu,1mp,6luc,109p,12tr,2b0w,7sac,2ewz,436k,2uge,t6o,m4a,ick,1ipp,15z8,3td9,1hp4,2zrs,56kg,2ve0,k8a,9br,2vud,1n5a,1ra6,zep,8qfy,23w2,2l0f,17i9,2tc1,cv6,27f1,t5q,5q8,2b1a,1q1e,23sy,2p17,kod,t9e,ysr,2z9a,10hn,1cje,2gci,1g7t,19rh,7uy,1m2c,1n6g,1gxa,2cko,2rta,1bvk,qb0,5vzx,372c,4i4g,2bil,27em,3ld,1o8o,1o57,2fx6,8n75,38gz,dak,6vqe,1rjy,59rh,10z6,9cpq,2zq3,18tv,7wl,7ctb,i7k,47w7,n57,53o2,12an,53ld,1bsz,129w,fn9,7qct,3f17,2w2i,2oo6,1vf4,1mv6,15dg,1at9,33ka,1c2j,149o,qs1,1u2c,2ty4,123y,26sv,1umy,1dc4,ksq,avn,3rfx,2jww,sl2,71r,45sx,2f9f,4ke5,1qnw,2cr1,1ize,1y7,ccw,1532,utj,2z5q,1ebl,7ta,36tf,72y7,pnw,15hn,62q,1f2k,1fxk,uyg,1epa,96u,1kq9,wr2,3sq9,1o2i,1poq,5fa,asf,2ko6,1qs5,2w5t,1q2g,1nwq,6e8b,1ucw,231,2ukq,2fjb,vag,1qh7,1hfd,3628,kwj,1fh9,91i,436j,26zz,73vu,4ffv,aav,1963,1j5m,ek7,eh0,kaa,apf,2mw7,9hzv,ti5,1iwh,3807,rrq,2msx,3ciq,1sbe,6w9y,3e9,1dui,2kwb,1rov,f4c,qcd,277w,on5,63zw,tyf,uam,pj2,hvv,56dz,1b65,1yb0,vla,hld,a7q,3myj,2mw6,2nwu,qj8,1jsy,48m8,uoe,2em0,1xs1,1qtx,1q96,uuo,62lq,h31,2em9,1anw,18gv,1vkf,3n0t,73t7,1shi,2m1h,1g8h,n90,2yil,1r54,3glc,3fkh,1smh,fym,7lrn,wb8,45oq,2awq,3khh,1hvr,35in,1uj8,2nd9,1ky,i2k,462l,5ygd,111q,2cyw,1x4o,yuk,5om6,20ap,35sj,1bim,1ntl,id4,4mef,19hg,zkt,7lfy,ehy,19uw,2zk9,14ie,1ss5,lds,6mcr,fi7,19i5,13se,ww1,2jpr,7xk7,7v5,zg,1mow,2rdh,19hu,151g,1mvk,4hal,1nps,1318,3l2u,kf2,11nq,cuw,1rgg,1f4z,2w6n,5lo8,3gbx,1mgq,233y,lc4,45f3,2v1t,bil,8cwf,11rn,1mfs,7b7s,7sqb,m0n,qts,3pk4,a15b,4stw,4bd5,fp6,54sq,1s,2706,6cc3,1v33,2xb3,45se,18em,1hwh,3du4,p7u,7f3z,1h6q,11ur,26lw,jvw,1xoo,3d6c,31vx,2t3d,2j2k,38t2,1z6e,14za,3pqb,g84,2iov,3eju,14l0,gi0,s1r,3hr,fvc,5yzs,1i8w,7l2,20xt,veg,6mbk,32lr,2ace,19fc,dpo,1z83,1jf6,3m8g,1e24,1t05,12h2,2fxd,wdx,7fi5,sjc,unv,5e3,1iqf,47wg,sh3,8w0,n89,21qo,3nom,5rib,29p4,781h,l2b,56m1,1auj,1zu7,1exm,47s4,11s9,1ubd,16r7,1xgr,3om6,1km9,1oo2,6e01,18jm,1j8,2b3l,cyc,sks,iyy,1f6n,1s7w,tuh,1dfr,6mt4,1xok,171y,1ntg,6tnx,nxm,1b4t,e88,25rf".split(","); // through 2028-12-31
+  // Practice mazes: passing maze numbers for seed "practice-<tier>", so a new practice maze is instant.
+  const PRACTICE_TRAILS = ["28x,2d6,9q1,9wb,c3u,p59,wwo,zku,119j,15ix,1qf6,1r6c,1wts,1xhx,2dnp,2khe,2mz5,2s7d,2z8p,3bte,3kuz,3w5h,4msz,50w2,540f,56i6,5eca,5ogd,6lvd,6u67,6zb5,7ah1,7fkk,7iul,7tjm,8341,863e,87r3,8bmv,8qfs,909x,92ep,93hc,954t,9v2z,a0vu,a3r3,acfd,aco2,and6,big1,bjmn,bl2f,bm9v,boew,bv87,c0n3,c5at,ceev,dc34,djsr,dn78,drwq,dsln,dzw9,eaa0,effq,ekbw,eswq,f750,fjra,gmii,gpsj,gvi9,h74a,hcxy,hg10,hloi,hnba,hp91", "1an,4rj,cpb,iqq,k51,o61,vrl,14bo,1cx7,1k2k,2a4y,2cvh,2g2g,2h55,33kz,3dup,3jgx,3qc3,3x21,3ysv,40o6,41w3,4wkn,4zik,51fj,58fs,5bhj,5hrk,5k1c,5o2q,5of5,5wtz,67ch,67qm,6ai9,6qje,6ykd,7xhk,933s,9gyx,9xwj,acro,agco,anvo,axt8,besn,c9cg,cbh9,cjs3,csht,dagy,dzby,e3qg,e8x7,en4c,fwo4,g37m,g4co,gdgy,gg0a,hmda,hox3,hygg,ik30,iuqh,j6lo,j6o8,jfsj,jokp,kfbb,kmo9,knt6,mejb,n6b7,np7y,ntt7,nuer,nvdm,o3se,o758", "usr,w8i,12ro,1s6s,46ak,5tvv,6bij,720r,a5ag,avu4,axux,boi6,g6bs,h7x9,i6el,iufd,jarm,jnn8,lzj7,muvg,nc2j,pb2t,rpw9,rzej,sv3y,tf5k,tj50,ueoh,un5y,v886,vlw9,xntm,xzpt,z1zs,zbl3,1242s,129ss,12r1p,12zkd,13im6,148di,154oq,16fkd,16iif,16km8,1745n,18ler,19aij,19zbz,1ak9j,1anow,1b1we,1cz1s,1e4im,1elqp,1f95j,1fjmv,1fp9g,1fpty,1gnc7,1irpu,1j5t8,1jfhb,1jzaw,1ltk7,1m5ce,1mhzp,1mxq2,1nant,1nc5k,1pafd,1phx4,1punf,1q3q7,1qm1g,1uarg,1uhnj,1v8tk,1x2s1,1xdh7"].map(s => s.split(",").filter(Boolean));
   function buildPath(seed, spec) {
-    const W = SIZE, H = SIZE, all = [];
-    for (let i = 0; i < CANDIDATES; i++) {
-      const rng = rngFrom(seed + "|path|" + i);
-      const open = kruskalMaze(W, H, rng);
-      const [start, exit] = pickEnds(rng, spec.tier, W, H);
-      const sol = bfs(open, W, H, start, exit), solSet = new Set(sol);
-      const m = { W, H, open, start, exit, sol, solSet, forks: findForks(open, sol, W, H) };
-      // Every daily trail has exactly 5 forks, no short wrong ways, and at least one 3-way fork.
-      if (m.forks.length !== FORKS || m.forks[0] === 0 || minBranch(open, sol, W) < MIN_BRANCH) continue;
-      for (let k = 0; k < 3 && threeWayForks(m) < THREE_WAY; k++) if (!addThreeWay(m, rng)) break;
-      if (threeWayForks(m) < THREE_WAY || m.forks[0] === 0) continue;
-      if (m.forks.some((si, k) => k && si - m.forks[k - 1] < FORK_GAP)) continue;
-      if (sol.length < MIN_TRAIL || !forksSpread(m)) continue;
-      m.dist = distanceToPath(m.open, W, H, solSet); m.score = scoreMaze(m); all.push(m);
+    let m = null;
+    if (spec.trail) m = trailCandidate(spec.trail[0], spec.trail[1], spec.tier);
+    else if (/^\d{4}-\d{2}-\d{2}$/.test(seed)) {
+      const v = TRAIL_DAYS[dayNum(seed) - dayNum(TRAIL_FROM)];
+      if (v) m = trailCandidate(seed, parseInt(v, 36), spec.tier);
     }
-    // Try another batch in the rare case none qualify.
-    const cands = all;
-    if (!cands.length) return buildPath(seed + "+", spec);
-    // Take the toughest-looking candidates, have a simulated player try each a few times,
-    // and pick the day's maze by how many tries it actually needed. This finds deceptive mazes.
-    cands.sort((a, b) => a.score - b.score);
-    const top = cands.slice(-RATE_TOP), rr = rngFrom("rate|" + seed);
-    top.forEach(c => { let t = 0; for (let k = 0; k < 3; k++) t += simTries(c, rr); c.simTries = t / 3; });
-    top.sort((a, b) => a.simTries - b.simTries || a.score - b.score);
-    const m = top[Math.min(top.length - 1, Math.floor(spec.pct * top.length))];
+    if (!m) m = searchTrail(seed, spec.tier, spec.pct);
     return Object.assign(m, { guesses: [], cur: [m.start], done: false, won: false, sel: -1, hard: false,
       edges: new Map(), cellStat: new Map() });
   }
@@ -818,6 +832,7 @@ details ul { padding-left: 18px; }
       if (P.guesses.length >= MAX_GUESSES) { P.done = true; break; }
     }
     P.cur = [P.start];
+    P.showLast = P.guesses.length > 0 && !P.done; // keep the "what went wrong" hint after a reload
   }
   // What a try's first mistake was, in plain words. The trail only branches at forks, so a try can only go wrong
   // two ways: the wrong way at a fork, or into a wall between forks.
@@ -1104,11 +1119,14 @@ details ul { padding-left: 18px; }
     if (G.done) polyline(G.sol, g, t.hit, cs * 0.1, [cs * 0.12, cs * 0.12], 0.85);
     polyline(G.hist, g, t.route, cs * 0.14, null, 0.55);
     // Burnt-out torches: a gray, put-out flame on the last tile of each dead end you walked into,
-    // one for a short dead end and two for a long one.
+    // one for a short dead end and two for a long one. While you stand on that tile, they sit small in its corner
+    // so your marker doesn't hide them.
+    const here = G.hist[G.hist.length - 1];
     (G.deadTiles || []).forEach(({ c, cost }) => {
       // A put-out torch: a gray flame with a curled tip, side tongue and hollow core.
-      const s = cs * 0.3, by = g.cy(c) + s * 0.7;
-      const xs = cost === 1 ? [g.cx(c)] : [g.cx(c) - s * 0.42, g.cx(c) + s * 0.42];
+      const onIt = c === here && !G.won, s = cs * (onIt ? 0.17 : 0.3);
+      const x0 = g.cx(c) + (onIt ? cs * 0.3 : 0), by = onIt ? g.cy(c) - cs * 0.14 : g.cy(c) + s * 0.7;
+      const xs = cost === 1 ? [x0] : [x0 - s * 0.42, x0 + s * 0.42];
       xs.forEach(x => {
         ctx.save(); ctx.translate(x, by); ctx.scale(s, s);
         ctx.beginPath();
@@ -1155,18 +1173,34 @@ details ul { padding-left: 18px; }
     if (x < 0 || y < 0 || x >= G.W || y >= G.H) return -1;
     return y * G.W + x;
   }
-  let dragging = false, lastDragCell = -1;
+  let dragging = false, lastDragCell = -1, fogDown = null;
   canvas.addEventListener("pointerdown", ev => {
     const c = cellAt(ev); if (c < 0) return;
     if (mode === "path") { dragging = true; lastDragCell = c; canvas.setPointerCapture(ev.pointerId); pathTap(c, false); }
-    else fogGoto(c);
+    else fogDown = { c, x: ev.clientX, y: ev.clientY }; // Fog moves when the finger lifts, so a swipe isn't a step
   });
   canvas.addEventListener("pointermove", ev => {
     if (!dragging || mode !== "path") return;
     const c = cellAt(ev); if (c < 0 || c === lastDragCell) return;
-    lastDragCell = c; pathTap(c, true);
+    lastDragCell = c;
+    // A fast or diagonal drag can jump past tiles: walk toward the finger one tile at a time, trying the
+    // bigger direction first, and stop if neither way works (a known wall, or the trail is already at the flag).
+    for (let guard = 0; guard < P.W * P.H; guard++) {
+      const end = P.cur[P.cur.length - 1]; if (end === c) break;
+      const dx = c % P.W - end % P.W, dy = ((c / P.W) | 0) - ((end / P.W) | 0);
+      const xs = dx ? end + Math.sign(dx) : -1, ys = dy ? end + Math.sign(dy) * P.W : -1;
+      const tries = (Math.abs(dx) >= Math.abs(dy) ? [xs, ys] : [ys, xs]).filter(n => n >= 0);
+      if (!tries.some(n => { pathTap(n, true); return P.cur[P.cur.length - 1] !== end; })) break;
+    }
   });
-  ["pointerup", "pointercancel"].forEach(e => canvas.addEventListener(e, () => { dragging = false; }));
+  ["pointerup", "pointercancel"].forEach(e => canvas.addEventListener(e, ev => {
+    dragging = false;
+    if (mode === "fog" && fogDown && e === "pointerup") {
+      const c = cellAt(ev), moved = Math.hypot(ev.clientX - fogDown.x, ev.clientY - fogDown.y) > 14;
+      if (!moved && c === fogDown.c) fogGoto(c);
+    }
+    fogDown = null;
+  }));
 
   function moveDir(di) {
     const G = mode === "path" ? P : F;
@@ -1178,11 +1212,14 @@ details ul { padding-left: 18px; }
     else { const fwd = corridorForward(); if (fwd >= 0 && n !== fwd) { flash(CORRIDOR_MSG); return; } fogStep(n, false); }
   }
   document.addEventListener("keydown", ev => {
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return; // leave browser shortcuts (Ctrl+S, Cmd+W...) alone
     if (!$("howModal").hidden) { if (ev.key === "Escape") { ev.preventDefault(); closeHow(); } return; }
     if (!$("resultModal").hidden) { if (ev.key === "Escape") { ev.preventDefault(); closeResult(); } return; }
     const map = { ArrowUp: 0, ArrowRight: 1, ArrowDown: 2, ArrowLeft: 3, w: 0, d: 1, s: 2, a: 3 };
     if (ev.key in map) { ev.preventDefault(); moveDir(map[ev.key]); return; }
-    if (mode === "path" && ev.key === "Enter") { ev.preventDefault(); submitPath(); }
+    // Enter on a focused button, link or switch should press that control, not submit the trail.
+    const el = document.activeElement, onControl = el && /^(BUTTON|A|INPUT|SELECT|TEXTAREA)$/.test(el.tagName);
+    if (mode === "path" && ev.key === "Enter" && !onControl) { ev.preventDefault(); submitPath(); }
     if (mode === "path" && ev.key === "Backspace") { ev.preventDefault(); undo(); }
   });
   function undo() { if (!P.done && P.cur.length > 1) { P.cur.pop(); render(); } }
@@ -1220,6 +1257,8 @@ details ul { padding-left: 18px; }
   }
 
   function render() {
+    // Trail needs the board to keep every touch (for drawing); Fog lets a swipe on the board scroll the page.
+    canvas.style.touchAction = mode === "path" ? "none" : "manipulation";
     $("meta").innerHTML = practice ? "<b>Practice</b>" : "<b>#" + puzzleNo + "</b> · " + dateLabel;
     $("tab-path").setAttribute("aria-selected", mode === "path");
     $("tab-fog").setAttribute("aria-selected", mode === "fog");
@@ -1372,12 +1411,16 @@ details ul { padding-left: 18px; }
   function maybeShowHow() { if (readJSON(SEEN(mode)) !== true) openHow(); }
   $("howBtn").addEventListener("click", openHow);
   // Result popup: opens when a game ends; "See the board" hides it, "Show result" brings it back.
-  function openResult() { $("resultModal").hidden = false; render(); try { $("shareBtn").focus(); } catch (e) {} }
+  // On phones, the tap that ends a game is followed by a click that lands on the popup it just opened, so taps on
+  // the popup are ignored for a moment after it opens.
+  let resultOpenedAt = 0;
+  const resultJustOpened = () => performance.now() - resultOpenedAt < 600;
+  function openResult() { resultOpenedAt = performance.now(); $("resultModal").hidden = false; render(); try { $("shareBtn").focus(); } catch (e) {} }
   function closeResult() { $("resultModal").hidden = true; render(); try { $("resultBtn").focus(); } catch (e) {} }
   $("resultBtn").addEventListener("click", openResult);
-  $("resultClose").addEventListener("click", closeResult);
-  $("resultOk").addEventListener("click", closeResult);
-  $("resultModal").addEventListener("click", ev => { if (ev.target === $("resultModal")) closeResult(); });
+  $("resultClose").addEventListener("click", () => { if (!resultJustOpened()) closeResult(); });
+  $("resultOk").addEventListener("click", () => { if (!resultJustOpened()) closeResult(); });
+  $("resultModal").addEventListener("click", ev => { if (ev.target === $("resultModal") && !resultJustOpened()) closeResult(); });
   $("howClose").addEventListener("click", closeHow);
   $("howOk").addEventListener("click", closeHow);
   $("howModal").addEventListener("click", ev => { if (ev.target === $("howModal")) closeHow(); });
@@ -1393,6 +1436,7 @@ details ul { padding-left: 18px; }
   });
 
   $("shareBtn").addEventListener("click", () => {
+    if (resultJustOpened()) return;
     const text = $("shareText").textContent;
     const done = () => { $("copied").hidden = false; setTimeout(() => $("copied").hidden = true, 1800); };
     const fallback = () => { const r = document.createRange(); r.selectNodeContents($("shareText")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
@@ -1401,7 +1445,11 @@ details ul { padding-left: 18px; }
   document.querySelectorAll(".modes button").forEach(b => b.addEventListener("click", () => { mode = b.dataset.mode; $("resultModal").hidden = true; render(); maybeShowHow(); }));
   // Practice mode doubles as a difficulty tester: pick which weekday's difficulty to play.
   // Practice: a brand-new random maze for both games, at a random difficulty, every time.
-  function newPractice() { newGame("practice-" + Math.random().toString(36).slice(2), null, LEVELS[Math.floor(Math.random() * LEVELS.length)]); render(); }
+  function newPractice() {
+    const lv = LEVELS[Math.floor(Math.random() * LEVELS.length)], list = PRACTICE_TRAILS[lv.tier];
+    const spec = list.length ? Object.assign({ trail: ["practice-" + lv.tier, parseInt(list[Math.floor(Math.random() * list.length)], 36)] }, lv) : lv;
+    newGame("practice-" + Math.random().toString(36).slice(2), null, spec); render();
+  }
   $("practiceBtn").addEventListener("click", () => {
     practice = !practice;
     if (practice) newPractice();
@@ -1413,6 +1461,21 @@ details ul { padding-left: 18px; }
   try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw); } catch (e) {}
   new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
   new ResizeObserver(resize).observe(canvas.parentElement);
+
+  // Saves are per day; clear out the ones from other days so storage never fills up.
+  try {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (/^mazedle-(path|fog)\d+-\d{4}-\d{2}-\d{2}$/.test(k) && k !== STORE && k !== FOG_STORE) localStorage.removeItem(k);
+    }
+  } catch (e) {}
+  // A tab left open past midnight would keep yesterday's puzzle: when the page comes back into view on a new day,
+  // reload it (progress is saved; practice games aren't, so those are left alone).
+  const localKey = () => { const d = new Date(); return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); };
+  const checkNewDay = () => { if (!practice && localKey() !== dateKey) location.reload(); };
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") checkNewDay(); });
+  window.addEventListener("focus", checkNewDay);
+  window.addEventListener("pageshow", ev => { if (ev.persisted) checkNewDay(); });
 
   const firstSave = loadSave();
   // If today's game has no save (e.g. the rules changed), drop any stale stats entry for today so the replay counts.
