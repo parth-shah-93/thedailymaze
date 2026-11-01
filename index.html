@@ -309,9 +309,8 @@ details ul { padding-left: 18px; }
       </div>
       <pre id="shareText" class="share"></pre>
       <div class="row">
-        <button class="btn" id="shareBtn">Copy result</button>
         <span class="copied" id="copied" hidden>Copied to clipboard</span>
-        <button class="btn primary" id="sendBtn" hidden>Share result</button>
+        <button class="btn primary" id="shareBtn">Share result</button>
       </div>
       <button class="btn modal-play" id="resultOk">See the board</button>
     </div>
@@ -1440,7 +1439,7 @@ details ul { padding-left: 18px; }
   // the popup are ignored for a moment after it opens.
   let resultOpenedAt = 0;
   const resultJustOpened = () => performance.now() - resultOpenedAt < 600;
-  function openResult() { resultOpenedAt = performance.now(); $("resultModal").hidden = false; render(); try { $($("sendBtn").hidden ? "shareBtn" : "sendBtn").focus(); } catch (e) {} }
+  function openResult() { resultOpenedAt = performance.now(); $("resultModal").hidden = false; render(); try { $("shareBtn").focus(); } catch (e) {} }
   function closeResult() { $("resultModal").hidden = true; render(); try { $("resultBtn").focus(); } catch (e) {} }
   $("resultBtn").addEventListener("click", openResult);
   $("resultClose").addEventListener("click", () => { if (!resultJustOpened()) closeResult(); });
@@ -1466,14 +1465,11 @@ details ul { padding-left: 18px; }
     const fallback = () => { const r = document.createRange(); r.selectNodeContents($("shareText")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
     try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
   }
-  $("shareBtn").addEventListener("click", () => { if (!resultJustOpened()) copyResult(); });
-  // "Share result" opens the device's share sheet (Messages, WhatsApp, email...). Browsers without one only get
-  // "Copy result", which then becomes the main button. If sharing fails (not just cancelled), copy instead.
-  const canSend = typeof navigator.share === "function";
-  $("sendBtn").hidden = !canSend;
-  if (!canSend) $("shareBtn").classList.add("primary");
-  $("sendBtn").addEventListener("click", () => {
+  // One button: it opens the device's share sheet (Messages, WhatsApp, email, Copy...) where the browser has one,
+  // and copies the result everywhere else, or if sharing fails for any reason other than the player cancelling.
+  $("shareBtn").addEventListener("click", () => {
     if (resultJustOpened()) return;
+    if (typeof navigator.share !== "function") { copyResult(); return; }
     try { navigator.share({ text: $("shareText").textContent }).catch(e => { if (!e || e.name !== "AbortError") copyResult(); }); }
     catch (e) { copyResult(); }
   });
